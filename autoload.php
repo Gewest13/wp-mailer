@@ -4,18 +4,15 @@
   // This class uses array to object conversion of ACF fields
   // Please leave this function included
   // =============
-  function array_to_object ($value) {
-    // run the_content filter on all textarea values
-    $value = json_decode(json_encode($value));
-    return $value;
-  } add_filter('acf/format_value', 'array_to_object', 10, 3);
+  require "_functions.php";
 
 
   // =============
   // ----
   // Wordpress Mailer module
   // --
-  // Author: Jim de Ronde
+  // Author:    Jim de Ronde
+  // Website:   www.gewest13.nl
   // ----
   // =============
   class Mailer {
