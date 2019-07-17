@@ -1725,7 +1725,7 @@
                 "max": ""
             },
             {
-                "key": "field_5d2f0d52092ae",
+                "key": "field_5d2f370af6631",
                 "label": "Template",
                 "name": "",
                 "type": "tab",
@@ -1741,7 +1741,26 @@
                 "endpoint": 0
             },
             {
-                "key": "field_5d2f0d63092af",
+                "key": "field_5d2f33f48f8e9",
+                "label": "Message",
+                "name": "message",
+                "type": "textarea",
+                "instructions": "Here's where you can format your mail message template. This template accepts any HTML, as long as it's compatible with being displayed from e-mail clients. \r\n\r\nIf you want to insert a variable please use the following syntax: <strong>{{ field }}<\/strong>.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "maxlength": "",
+                "rows": 12,
+                "new_lines": "br"
+            },
+            {
+                "key": "field_5d2f36d2f662f",
                 "label": "Recipients",
                 "name": "",
                 "type": "tab",
@@ -1755,6 +1774,141 @@
                 },
                 "placement": "top",
                 "endpoint": 0
+            },
+            {
+                "key": "field_5d2f34d0a4c7d",
+                "label": "From",
+                "name": "from",
+                "type": "repeater",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "block",
+                "button_label": "Add details",
+                "sub_fields": [
+                    {
+                        "key": "field_5d2f34e6a4c7e",
+                        "label": "Name",
+                        "name": "name",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "50",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5d2f34efa4c7f",
+                        "label": "E-mail",
+                        "name": "email",
+                        "type": "email",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "50",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": ""
+                    }
+                ]
+            },
+            {
+                "key": "field_5d2f34f9a4c80",
+                "label": "To",
+                "name": "to",
+                "type": "repeater",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "block",
+                "button_label": "Add details",
+                "sub_fields": [
+                    {
+                        "key": "field_5d2f34f9a4c81",
+                        "label": "Name",
+                        "name": "name",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "50",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5d2f34f9a4c82",
+                        "label": "E-mail",
+                        "name": "email",
+                        "type": "email",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "50",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": ""
+                    }
+                ]
+            },
+            {
+                "key": "field_5d2f36e8f6630",
+                "label": "Send copy to respondent",
+                "name": "sendCopy",
+                "type": "true_false",
+                "instructions": "Set this to <u>true<\/u> if the respondent should also receive a copy of this e-mail.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "",
+                "default_value": 0,
+                "ui": 1,
+                "ui_on_text": "",
+                "ui_off_text": ""
             }
         ],
         "location": [
