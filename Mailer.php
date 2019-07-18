@@ -119,6 +119,136 @@
       }
     }
 
+    // Check required items function
+    public function checkRequired (array $fields) {
+      if (empty($fields) === false) {
+        // Set empty array
+        $required = [];
+        // Loop through all fields given and check if there are fields that are required
+        foreach ($fields as $key => $field) {
+          // Check if field is required, if so, parse to required field
+          if ($field->required === true) {
+            $required[] = $fields[$key];
+          }
+        }
+        // Return
+        return $required;
+      } else {
+        return false;
+      }
+    }
+
+    // Get post function
+    public function getFormPost (string $id) {
+      if (empty($id) === false) {
+        // Get the id
+        $id = sanitize($id);
+        // Shoot the query
+        $form = get_post(intval($id));
+        return $form;
+      } else {
+        return false;
+      }
+    }
+
+    // Validate fields function
+    public function validateFields (array $request, array $required) {
+
+      $errors = false;
+
+      if (empty($required) === false && empty($request) === false) {
+        // Loop through the required array
+        foreach ($required as $r) {
+          // Check if corresponding index in $request is given
+          if (isset($request[$r->name]) === true) {
+
+            $field = $request[$r->name];
+
+            // Index is given
+            // Now check for min or max
+            $min = (empty($r->min) === true) ? 0 : $r->min;
+            $max = (empty($r->max) === true) ? 0 : $r->max;
+
+            // Check for min and max
+            if (strlen($field) >= $min && strlen($field) >= $max) {
+              // Do nothing
+            } else {
+              $errors[$r->name] = "Please check the amount of characters you have entered";
+            }
+
+          } else {
+            $errors[$r->name] = "Field is not given";
+          }
+        }
+      }
+
+      // Check if there are errors
+      if ($errors === false) return true; else return $errors;
+    }
+
+    // Format e-mail addresses
+    public function formatTo (array $to) {
+      if (empty($to) === false) {
+        return $this->implodeField($to, "email", ", ");
+      } else {
+        return true;
+      }
+    }
+
+    // Sanitize data
+    public function sanitizeData (array $data) {
+      $request = false;
+
+      foreach ($data as $key => $req) {
+        if (is_array($req) === false) {
+          $request[$key] = sanitize($req);
+        } else {
+          foreach ($req as $k => $r) {
+            $request[$key][$k] = sanitize($r);
+          }
+        }
+      }
+
+      return $request;
+    }
+
+    // Replace variable function
+    public function replaceVariable (string $string, array $fields) {
+      if (empty($string) === false && empty($fields) === false) {
+
+        // Replaceable string
+        $replaced = false;
+        $return   = false;
+
+        // Loop through the fields
+        foreach ($fields as $key => $field) {
+
+          // Set variables
+          $search  = "{{ $key }}";
+          $replace = $field;
+
+          // Try to replace
+          if ($return !== false) {
+            $replaced = str_replace($search, $replace, $return);
+          } else {
+            $replaced = str_replace($search, $replace, $string);            
+          }
+
+          // Check if it has been replaced
+          if ($replaced !== $string) {
+            $return = $replaced;
+          }
+        }
+      }
+
+      return $return;
+    }
+
+    // Implode field function
+    public function implodeField (array $array, string $field, string $glue) {
+      return implode("$glue", array_column($array, $field));
+    }
+
     // Function that initializes the script
     public function initialize () {
 
