@@ -142,26 +142,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f11dd3ceba",
-                                "label": "ID",
-                                "name": "id",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 0,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -180,7 +161,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -995,26 +976,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f10b9cabb3",
-                                "label": "ID",
-                                "name": "id",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 0,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1033,7 +995,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1928,6 +1890,60 @@
                 "ui": 1,
                 "ui_on_text": "",
                 "ui_off_text": ""
+            },
+            {
+                "key": "field_5d3059b715292",
+                "label": "Field: Name",
+                "name": "nameField",
+                "type": "text",
+                "instructions": "Add the name of the field used for the respondent's name.",
+                "required": 1,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_5d2f36e8f6630",
+                            "operator": "==",
+                            "value": "1"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5d305a0015293",
+                "label": "Field: E-mail",
+                "name": "emailField",
+                "type": "text",
+                "instructions": "Add the name of the field used for the respondent's email.",
+                "required": 1,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_5d2f36e8f6630",
+                            "operator": "==",
+                            "value": "1"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
             }
         ],
         "location": [

@@ -231,7 +231,7 @@
           if ($return !== false) {
             $replaced = str_replace($search, $replace, $return);
           } else {
-            $replaced = str_replace($search, $replace, $string);            
+            $replaced = str_replace($search, $replace, $string);
           }
 
           // Check if it has been replaced
@@ -242,6 +242,212 @@
       }
 
       return $return;
+    }
+
+    // Get form by id
+    public function getForm (int $id) {
+
+      // Check if not empty
+      if (empty($id) === false) {
+
+        // Set array for return object
+        $form_id = $id;
+        $data    = [];
+
+        // Add the form action
+        $data["fields"][] = (object) [
+          "field" => "<input type='hidden' name='action' value='sendMail' />"
+        ];
+
+        // Get fields
+        $fields = get_fields($form_id);
+        if (empty($fields) === false) {
+          // Loop through the fields
+          foreach ($fields["fields"] as $key => $field) {
+
+            // Clear field object
+            $f = (object) [];
+
+            // Switch for field types
+            switch ($field->acf_fc_layout) :
+
+              // Set up text-field
+              case "email" :
+              case "number" :
+              case "text" :
+              case "tel" :
+              case "url" :
+
+                // Set variables
+                $required = (empty($field->required) === false) ? 'required' : null;
+                $min      = (empty($field->min) === false) ? "min='{$field->min}'" : null;
+                $max      = (empty($field->max) === false) ? "max='{$field->max}'" : null;
+                $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
+
+                // Set field
+                $format = "<input type='{$field->acf_fc_layout}' name='$field->name' class='$field->classes' placeholder='$field->placeholder' $required $min $max $id />";
+                $format = $this->cleanField($format);
+
+                // Setup field array to be placed in $data array
+                $f = (object) [
+                  "name"  => $field->name,
+                  "label" => $field->label,
+                  "field" => $format
+                ];
+
+                break;
+
+              // Set up text-field
+              case "button" :
+
+                // Set field
+                $format = "<button type='{$field->type}' class='{$field->classes}'>{$field->text}</button>";
+                $format = $this->cleanField($format);
+
+                // Setup field array to be placed in $data array
+                $f = (object) [
+                  "field" => $format
+                ];
+
+                break;
+
+              case "checkbox" :
+              case "radio" :
+
+                // Set variables
+                $required = (empty($field->required) === false) ? 'required' : null;
+
+                // Clean options
+                $boxes = [];
+
+                $i = 1;
+
+                // Loop through all options
+                foreach ($field->options as $option) {
+                  // For id
+                  $for = "{$option->value}-{$i}";
+                  // Set up variables
+                  $o = [];
+                  $o["label"] = $option->label;
+                  $o["field"] = $this->cleanField("<label for='{$for}'>{$option->label}</label><input id='{$for}' type='{$field->acf_fc_layout}' name='{$field->name}[]' class='{$field->classes}' value='{$option->value}' $required />");
+                  // Parse to data
+                  $boxes[] = (object) $o;
+                }
+
+                // Setup field array to be placed in $data array
+                $f = (object) [
+                  "name"  => $field->name,
+                  "label" => $field->label,
+                  "field" => $boxes
+                ];
+
+                break;
+
+              case "textarea" :
+
+                // Set some variables
+                $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
+                $required = (empty($field->required) === false) ? ' required' : null;
+                $format   = "<textarea name='{$field->name}' class='{$field->classes}' placeholder='{$field->placeholder}' $id $required></textarea>";
+
+                // Setup field array to be placed in $data array
+                $f = (object) [
+                  "name"  => $field->name,
+                  "label" => $field->label,
+                  "field" => $format
+                ];
+
+                break;
+
+              case "select" :
+
+                // Set some variables
+                $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
+                $required = (empty($field->required) === false) ? ' required' : null;
+                $format   = "<select name='{$field->name}' class='{$field->classes}' $id $required><option value=''>{$field->label}</option>";
+
+                // Loop
+                foreach ($field->options as $option) {
+                  $o = "<option value='{$option->value}'>{$option->label}</option>";
+                  $format .= $o;
+                }
+
+                // Close format
+                $format .= "</select>";
+
+                // Setup field array to be placed in $data array
+                $f = (object) [
+                  "name"  => $field->name,
+                  "label" => $field->label,
+                  "field" => $format
+                ];
+
+                break;
+
+              case "file" :
+
+                // Set variables
+                $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
+                $required = (empty($field->required) === false) ? ' required' : null;
+                $multiple = (empty($field->multiple) === false) ? ' multiple' : null;
+                $format   = "<input name='{$field->name}' type='{$field->acf_fc_layout}' class='{$field->classes}' accept='{$field->filetypes}' $id $required $multiple />";
+
+                // Setup field array to be placed in $data array
+                $f = (object) [
+                  "name"  => $field->name,
+                  "label" => $field->label,
+                  "field" => $format
+                ];
+
+                break;
+
+            endswitch;
+
+            // Parse to array
+            $data["fields"][] = $f;
+          }
+
+          // Add the form id
+          $data["fields"][] = (object) [
+            "field" => "<input type='hidden' name='form_id' value='{$form_id}' />"
+          ];
+
+          // Add the form id
+          $data["fields"][] = (object) [
+            "field" => "<input type='hidden' name='credit_nr' value='' />"
+          ];
+
+          // Set some setting values
+          $data["settings"] = get_fields("forms_settings");
+          $data["action"]   = admin_url("admin-ajax.php");
+
+          // Return fields
+          return (object) $data;
+
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    // Parse field function
+    public function parseField ($field) {
+      if (isset($field->field) === true) {
+        if (is_array($field->field) === true) {
+          $return = $this->implodeField($field->field, "field", " ");
+        } else {
+          $return = $field->field;
+        }
+        return $return;
+      }
+    }
+
+    // Clean field for empty spaces
+    private function cleanField (string $field) {
+      $search = ["", "  ", "   ", "    "];
+      return str_replace($search, " ", $field);
     }
 
     // Implode field function

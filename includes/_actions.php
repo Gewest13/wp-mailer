@@ -8,13 +8,12 @@
   // In order to send the e-mails
   function sendMail () {
 
-    echo "<pre>";
-
     // Initiate mailer class
     $mailer = new Mailer();
 
     // Check if request is not empty
     if (empty($_REQUEST) === false) {
+
       // Check if the form_id was set
       if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
 
@@ -80,7 +79,17 @@
                   $mail->SMTPSecure  = "";
                   $mail->SMTPAutoTLS = false;
                   $mail->Port        = $smtp->port;
+                  // $mail->SMTPSecure  = $smtp->secure;
                   $mail->isHTML(true);
+
+                  // Check for BCc
+                  if (isset($fields["sendCopy"]) === true && $fields["sendCopy"] === true) {
+                    // Get mail and name
+                    $rName  = $request[$fields["nameField"]];
+                    $rEmail = $request[$fields["emailField"]];
+                    // Add bcc
+                    $mail->addBCC($rEmail, $rName);
+                  }
 
                   // Mail variables
                   $mail->setFrom($from->email, $from->name);
