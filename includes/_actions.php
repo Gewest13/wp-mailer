@@ -101,7 +101,7 @@
 
                   // Set subject and message
                   $mail->Subject = $mailer->replaceVariable($subject, $request);
-                  $mail->Body = $mailer->replaceVariable($message, $request);
+                  $mail->Body    = $mailer->replaceVariable($message, $request);
 
                   // Try sending
                   try {

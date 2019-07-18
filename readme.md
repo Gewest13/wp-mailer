@@ -30,7 +30,6 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 ## To do
 
   1. Javascript integration (AJAX)
-  2. Validation types for e-mail and phone
+  2. Validation types for e-mail / phone / file
   3. Add files (attachments)
-  4. Replace string in message for arrays (checkbox)
   5. Add ReCAPTCHA

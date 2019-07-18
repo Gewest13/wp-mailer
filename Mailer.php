@@ -225,7 +225,7 @@
 
           // Set variables
           $search  = "{{ $key }}";
-          $replace = $field;
+          if (is_array($field) === false) $replace = $field; else $replace = implode(", ", $field);
 
           // Try to replace
           if ($return !== false) {
