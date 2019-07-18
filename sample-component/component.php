@@ -13,10 +13,8 @@
 ?>
 <form action="<?= $form->action; ?>" method="get" class="">
 <?php
-  foreach ($form->fields as $f) : var_dump($f);
-?>
-  <?= $mailer->parseField($f); ?>
-<?php
+  foreach ($form->fields as $f) :
+    echo $mailer->parseField($f);
   endforeach;
 ?>
 </form>
