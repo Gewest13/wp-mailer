@@ -19,3 +19,11 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
   1. Use `$mailer->getForm($id)` to get all form fields.
   2. Then, use a `foreach` loop to loop through all fields. `foreach ($mailer->getForm($id) as $name => $field)`
   3. Inside the loop the `$field` variable will contain the entire html element so `echo` it. The `$name` variable will hold the field name as setup in Wordpress.
+
+## To do
+
+  1. Javascript integration (AJAX)
+  2. Validation types for e-mail and phone
+  3. Add files (attachments)
+  4. Replace string in message for arrays (checkbox)
+  5. Add ReCAPTCHA
