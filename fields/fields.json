@@ -229,25 +229,6 @@
                                         "maxlength": ""
                                     }
                                 ]
-                            },
-                            {
-                                "key": "field_5d2f11dd3cebf",
-                                "label": "Required",
-                                "name": "required",
-                                "type": "true_false",
-                                "instructions": "",
-                                "required": 0,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "100",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "message": "",
-                                "default_value": 0,
-                                "ui": 1,
-                                "ui_on_text": "",
-                                "ui_off_text": ""
                             }
                         ],
                         "min": "",

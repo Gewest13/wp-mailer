@@ -8,10 +8,9 @@
     if (empty($id) === false && is_numeric($id) === true) :
 
       // Get the form
-      $form   = $mailer->getForm($id);
-
+      $form = $mailer->getForm($id);
 ?>
-<form action="<?= $form->action; ?>" method="get" class="">
+<form action="<?= $form->action; ?>" method="post" class="" enctype="multipart/form-data" style="margin: 200px">
 <?php
   foreach ($form->fields as $f) :
     echo $mailer->parseField($f);

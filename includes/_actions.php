@@ -27,6 +27,12 @@
           // Sanitize data
           $request = $mailer->sanitizeData($_REQUEST);
 
+          // Check if there are files
+          if (empty($_FILES) === false) {
+            // Shift to array
+            $request[key($_FILES)] = $_FILES[key($_FILES)];
+          }
+
           // If request not false
           if ($request !== false) {
 
@@ -53,7 +59,7 @@
               if ($smtp !== false && $recaptcha !== false) {
 
                 // Set required array
-                $required = $mailer->checkRequired($fields["fields"]);
+                $required = $mailer->checkFields($fields["fields"]);
 
                 // Validate the fields
                 $validate = $mailer->validateFields($request, $required);
@@ -101,13 +107,33 @@
 
                   // Set subject and message
                   $mail->Subject = $mailer->replaceVariable($subject, $request);
-                  $mail->Body    = $mailer->replaceVariable($message, $request);
+                  $mail->Body    = $mailer->replaceVariable($message, $request) . "\n";
+
+                  // Add files
+                  if (empty($_FILES) === false) {
+
+                    // Set files
+                    $files = $_FILES[array_key_first($_FILES)];
+
+                    // Loop through temp names
+                    foreach ($files["tmp_name"] as $key => $file) {
+
+                      // Store real name and temp name
+                      $name = $files["name"][$key];
+
+                      // Move file to temp folder
+                      if (move_uploaded_file($file, sys_get_temp_dir() . basename($name)) === true) {
+                        // Add to mailer
+                        $mail->addAttachment(sys_get_temp_dir() . basename($name));
+                      }
+                    }
+                  }
 
                   // Try sending
                   try {
                     $mail->send();
                   } catch (Exception $e) {
-                    wp_send_json_error("Error white sending e-mail");
+                    wp_send_json_error("Error sending e-mail");
                   }
 
                 } else {

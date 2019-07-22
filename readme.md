@@ -8,8 +8,8 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
   Do this first.
 
-  1. Clone the respository in your `server/` directory.
-  2. Do a `componser install` inside the folder.
+  1. Clone the repository in your `server/` directory.
+  2. Do a `composer install` inside the folder.
   3. Require or include the `server/wp-mailer/autoload.php` into your `functions.php` file.
 
   When this is done a first form can be added.
@@ -30,7 +30,6 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 ## To do
 
   1. Javascript integration (AJAX)
-  2. Validation types for e-mail / phone / file
-  3. Add files (attachments)
-  4. Add honeypot field and check it within the post request
-  5. Add ReCAPTCHA
+  2. Add honeypot field and check it within the post request
+  3. Add ReCAPTCHA
+  4. Remove check so that fields can be empty when not required
