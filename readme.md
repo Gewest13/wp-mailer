@@ -17,6 +17,7 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
   4. Fill in all required information within the `Settings` page.
   5. Create a new form and add any field to your liking.
   6. Add the `/sample-component/` to your list of components/
+  7. At last, please include `wp_footer()` before the ending of your `</body>` tag. Please not that the entire function will be cleared and will only return the javascript file that will take care of the asynchronous requests.
 
 ## Functions
 
@@ -30,6 +31,4 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 ## To do
 
   1. Javascript integration (AJAX)
-  2. Add honeypot field and check it within the post request
   3. Add ReCAPTCHA
-  4. Remove check so that fields can be empty when not required

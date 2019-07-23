@@ -669,7 +669,7 @@
         } else {
           $return = $field->field;
         }
-        return $return;
+        return $return . "\n";
       }
     }
 

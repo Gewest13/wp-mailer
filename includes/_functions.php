@@ -25,3 +25,24 @@
       }
     }
   }
+
+  // Clear wp_footer
+  if (function_exists("remove_all_actions") === true) {
+    // Clear the wp_footer
+    remove_all_actions("wp_footer");
+  }
+
+  // Add script to wp_footer
+  if (function_exists("add_action") === true) {
+    // Add the action to add
+    add_action("wp_footer", function () {
+
+      // Set directory
+      $directory = get_template_directory_uri();
+      $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
+
+      // Return the script field with the file
+      echo "<script src='{$file}'></script>\n";
+
+    });
+  }
