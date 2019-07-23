@@ -174,11 +174,26 @@
        }
     }
 
+    // Sanitize input function
+    private function sanitizeField ($string) {
+      if (empty($string) === false) {
+        // Escape
+        $return = esc_html($string);
+        $return = esc_sql($return);
+        $return = esc_js($return);
+        // Sanitize
+        $return = sanitize_text_field($return);
+        // $return = sanitize_title_for_query($return);
+
+        return $return;
+      }
+    }
+
     // Get post function
     public function getFormPost (string $id) {
       if (empty($id) === false) {
         // Get the id
-        $id = sanitize($id);
+        $id = $this->sanitizeField($id);
         // Shoot the query
         $form = get_post(intval($id));
         return $form;
@@ -187,146 +202,199 @@
       }
     }
 
+    // Validate switch
+    private function switchValidation ($r, $field) {
+
+      // Set errors to false by default
+      $errors = false;
+
+      // Start switch/case for validation
+      switch ($r->acf_fc_layout):
+        // Default validation
+        case "text" :
+        case "textarea" :
+        case "radio" :
+        case "select" :
+
+          // Index is given
+          // Now check for min or max
+          $min = (empty($r->min) === true) ? 0 : intval($r->min);
+          $max = (empty($r->max) === true) ? 0 : intval($r->max);
+
+          // Check for min and max
+          if (strlen($field) >= $min && strlen($field) >= $max) {
+            // Do nothing
+          } else {
+            return "Please check the amount of characters you have entered.";
+          }
+
+          break;
+
+        // Number field
+        case "number" :
+
+          // Check if it's a number
+          if (is_numeric($field) === false) {
+            return "The value is not a number.";
+          } else {
+            // Index is given
+            // Now check for min or max
+            $min = (empty($r->min) === true) ? 0 : intval($r->min);
+            $max = (empty($r->max) === true) ? 0 : intval($r->max);
+
+            // Convert to integer
+            $field = intval($field);
+
+            // Check for min and max
+            if ($field >= $min && $field <= $max) {
+              // Do nothing
+            } else {
+              return "Please check the amount of characters you have entered.";
+            }
+          }
+
+          break;
+
+        // URL field
+        case "url" :
+
+          // Check if URL
+          if ($this->isUrl($field) === false) {
+            return "The value is not a valid url.";
+          }
+
+          break;
+
+        // File field
+        case "file" :
+
+          // Store the filetypes
+          $types = explode(", ", $r->filetypes);
+
+          // Shift array to variable
+          $name = $field["name"];
+
+          // Loop
+          if (empty($field) === false && empty($field["name"][array_key_first($name)]) === false) {
+
+            // Loop through errors
+            foreach ($field["error"] as $e) {
+
+              // Check if filesize is not 0
+              // Check if error is 0
+              if ($e === 0) {
+                // Do nothing
+              } else {
+                // Return error
+                return "There error validating the uploaded file.";
+              }
+            }
+
+            // Loop through sizes
+            foreach ($field["size"] as $s) {
+              // Check if filesize is not 0
+              // Check if error is 0
+              if ($s > 100) {
+                // Do nothing
+              } else {
+                // Return error
+                return "You've tried to upload an (nearly) empty file";
+              }
+            }
+
+            // Loop through
+            foreach ($field["name"] as $f) {
+              // Set extension
+              $extension = "." . pathinfo($f, PATHINFO_EXTENSION);
+              // Check if in array, else throw an error
+              if (in_array($extension, $types) === false) {
+                return "File extension that you are trying to upload is not allowed.";
+              }
+            }
+
+          } else {
+
+            // No file found, don't validate
+            return false;
+          }
+
+          break;
+
+        // E-mail field
+        case "email" :
+
+          // Check if the given variable is a valid e-mail address
+          if (filter_var($field, FILTER_VALIDATE_EMAIL) === false) {
+            return "The e-mailaddress given was not valid.";
+          }
+
+          break;
+
+        // Phone field
+        case "tel" :
+
+          // Check if field is a valid phone number
+          if ($this->isPhone($field) === false) {
+            return "The phonenumber you have entered is not valid.";
+          }
+
+          break;
+
+        // Checkbox field
+        case "checkbox" :
+
+          // Validate two things
+          // If not empty
+          // If it's an array
+          if (is_array($field) === false && empty($field) === true) {
+            return "The checkbox field did not validate.";
+          }
+
+          break;
+
+      endswitch;
+
+      // Return errors
+      return $errors;
+    }
+
     // Validate fields function
     public function validateFields (array $request, array $required) {
 
+      // Default to false
       $errors = false;
 
+      // Check if loopable
       if (empty($required) === false && empty($request) === false) {
+
         // Loop through the required array
         foreach ($required as $r) {
-          // Check if corresponding index in $request is given
-          if (isset($request[$r->name]) === true && empty($request[$r->name]) === false) {
 
-            // Store field
-            $field = $request[$r->name];
+          // Store field
+          $field = $request[$r->name];
 
-            // Start switch/case for validation
-            switch ($r->acf_fc_layout):
-              // Default validation
-              case "text" :
-              case "textarea" :
-              case "radio" :
-              case "select" :
+          // Check if required
+          if ($r->required === true) {
 
-                // Index is given
-                // Now check for min or max
-                $min = (empty($r->min) === true) ? 0 : intval($r->min);
-                $max = (empty($r->max) === true) ? 0 : intval($r->max);
-
-                // Check for min and max
-                if (strlen($field) >= $min && strlen($field) >= $max) {
-                  // Do nothing
-                } else {
-                  $errors[$r->name] = "Please check the amount of characters you have entered.";
-                }
-
-                break;
-
-              // Number field
-              case "number" :
-
-                // Check if it's a number
-                if (is_numeric($field) === false) {
-                  $errors[$r->name] = "The value is not a number.";
-                } else {
-                  // Index is given
-                  // Now check for min or max
-                  $min = (empty($r->min) === true) ? 0 : intval($r->min);
-                  $max = (empty($r->max) === true) ? 0 : intval($r->max);
-
-                  // Convert to integer
-                  $field = intval($field);
-
-                  // Check for min and max
-                  if ($field >= $min && $field <= $max) {
-                    // Do nothing
-                  } else {
-                    $errors[$r->name] = "Please check the amount of characters you have entered.";
-                  }
-                }
-
-                break;
-
-              // URL field
-              case "url" :
-
-                // Check if URL
-                if ($this->isUrl($field) === false) {
-                  $errors[$r->name] = "The value is not a valid url.";
-                }
-
-                break;
-
-              // File field
-              case "file" :
-
-                // Loop
-                if (empty($field) === false) {
-
-                  // Loop through errors
-                  foreach ($field["error"] as $e) {
-                    // Check if filesize is not 0
-                    // Check if error is 0
-                    if ($e === 0) {
-                      // Do nothing
-                    } else {
-                      // Return error
-                      $errors[$r->name] = "There error validating the uploaded file.";
-                    }
-                  }
-
-                  // Loop through sizes
-                  foreach ($field["size"] as $s) {
-                    // Check if filesize is not 0
-                    // Check if error is 0
-                    if ($s > 100) {
-                      // Do nothing
-                    } else {
-                      // Return error
-                      $errors[$r->name] = "You've tried to upload an (nearly) empty file";
-                    }
-                  }
-                }
-
-                break;
-
-              // E-mail field
-              case "email" :
-
-                // Check if the given variable is a valid e-mail address
-                if (filter_var($field, FILTER_VALIDATE_EMAIL) === false) {
-                  $errors[$r->name] = "The e-mailaddress given was not valid.";
-                }
-
-                break;
-
-              // Phone field
-              case "tel" :
-
-                // Check if field is a valid phone number
-                if ($this->isPhone($field) === false) {
-                  $errors[$r->name] = "The phonenumber you have entered is not valid.";
-                }
-
-                break;
-
-              // Checkbox field
-              case "checkbox" :
-
-                // Validate two things
-                // If not empty
-                // If it's an array
-                if (is_array($field) === false && empty($field) === true) {
-                  $errors[$r->name] = "The checkbox field did not validate.";
-                }
-
-                break;
-
-            endswitch;
+            // Check if not empty
+            if (empty($field) === true) {
+              $errors[$r->name] = "This field is required.";
+            } else {
+              if ($this->switchValidation($r, $field) !== false) {
+                $errors[$r->name] = $this->switchValidation($r, $field);
+              }
+            }
 
           } else {
-            $errors[$r->name] = "Field is not given";
+
+            // Check if not empty
+            if (isset($field) === true) {
+              // Not required, but validate
+              if ($this->switchValidation($r, $field) !== false) {
+                $errors[$r->name] = $this->switchValidation($r, $field);
+              }
+            }
+
           }
         }
       }
@@ -350,10 +418,10 @@
 
       foreach ($data as $key => $req) {
         if (is_array($req) === false) {
-          $request[$key] = sanitize($req);
+          $request[$key] = $this->sanitizeField($req);
         } else {
           foreach ($req as $k => $r) {
-            $request[$key][$k] = sanitize($r);
+            $request[$key][$k] = $this->sanitizeField($r);
           }
         }
       }
