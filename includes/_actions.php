@@ -14,148 +14,172 @@
     // Check if request is not empty
     if (empty($_REQUEST) === false) {
 
-      // Check if the form_id was set
-      if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
+      // Check if the recaptcha is valid
+      // Get all the general options
+      $settings = get_fields("forms_settings");
 
-        // Get the form
-        $form = $mailer->getFormPost($_REQUEST["form_id"]);
+      // Validate the recaptcha
+      $validate = $_REQUEST["recaptcha"];
 
-        // Get the last field of array
-        $honeyValue = end($_REQUEST);
-        $honeyKey   = key(array_reverse($_REQUEST));
+      // Format the url for the request
+      $url = "https://www.google.com/recaptcha/api/siteverify?secret={$settings["recaptcha"]->key_secret}&response={$validate}";
 
-        // Check if not empty
-        // If not, the form is valid
-        // Also, check for honeypot occurence
-        if (empty($form) === false && is_object($form) === true && in_array($honeyKey, $mailer->honey) === true && empty($honeyValue) === true) {
+      // Catch response for the recaptcha
+      $response = getSslPage($url);
+      $response = json_decode($response);
 
-          // Sanitize data
-          $request = $mailer->sanitizeData($_REQUEST);
+      // See if success
+      if ($response->success === true) {
 
-          // Check if there are files
-          if (empty($_FILES) === false) {
-            // Shift to array
-            $request[key($_FILES)] = $_FILES[key($_FILES)];
-          }
+        // Check if the form_id was set
+        if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
 
-          // If request not false
-          if ($request !== false) {
+          // Get the form
+          $form = $mailer->getFormPost($_REQUEST["form_id"]);
 
-            // Get all the general options
-            $settings = get_fields("forms_settings");
+          // Get the last field of array
+          $honeyValue = end($_REQUEST);
+          $honeyKey   = key(array_reverse($_REQUEST));
 
-            // Get the fields
-            $fields = get_fields($form->ID);
+          // Check if not empty
+          // If not, the form is valid
+          // Also, check for honeypot occurence
+          if (empty($form) === false && is_object($form) === true && in_array($honeyKey, $mailer->honey) === true && empty($honeyValue) === true) {
 
-            // Check if fields are given
-            if (empty($fields["fields"]) === false) {
+            // Sanitize data
+            $request = $mailer->sanitizeData($_REQUEST);
 
-              // Set some variables
-              $message   = $fields["message"];
-              $subject   = $fields["subject"];
-              $from      = $fields["from"][0];
-              $toArray   = $fields["to"];
+            // Check if there are files
+            if (empty($_FILES) === false) {
+              // Shift to array
+              $request[key($_FILES)] = $_FILES[key($_FILES)];
+            }
 
-              // Chekc if given
-              (empty($settings["smtp"]) === false) ? $smtp = $settings["smtp"] : $smtp = false;
-              (empty($settings["recaptcha"]) === false) ? $recaptcha = $settings["recaptcha"] : $recaptcha = false;
+            // If request not false
+            if ($request !== false) {
 
-              // Check if smtp & recaptcha settings are given
-              if ($smtp !== false && $recaptcha !== false) {
+              // Get the fields
+              $fields = get_fields($form->ID);
 
-                // Set required array
-                $required = $mailer->checkFields($fields["fields"]);
+              // Check if fields are given
+              if (empty($fields["fields"]) === false) {
 
-                // Validate the fields
-                $validate = $mailer->validateFields($request, $required);
+                // Set some variables
+                $message   = $fields["message"];
+                $subject   = $fields["subject"];
+                $from      = $fields["from"][0];
+                $toArray   = $fields["to"];
 
-                // Check if validate returned true
-                if ($validate === true) {
+                // Chekc if given
+                (empty($settings["smtp"]) === false) ? $smtp = $settings["smtp"] : $smtp = false;
+                (empty($settings["recaptcha"]) === false) ? $recaptcha = $settings["recaptcha"] : $recaptcha = false;
 
-                  // We have validated all fields
-                  // Now we can set up the variables and hooks in order to send the mail
-                  // Require PHPMailer
-                  require(__DIR__ . "/../vendor/autoload.php");
+                // Check if smtp & recaptcha settings are given
+                if ($smtp !== false && $recaptcha !== false) {
 
-                  // Declare class
-                  $mail = new PHPMailer(true);
+                  // Set required array
+                  $required = $mailer->checkFields($fields["fields"]);
 
-                  // Set settings
-                  $mail->SMTPDebug = 4;
-                  $mail->isSMTP();
-                  $mail->Host        = $smtp->host;
-                  $mail->SMTPAuth    = true;
-                  $mail->Username    = $smtp->username;
-                  $mail->Password    = $smtp->password;
-                  $mail->SMTPSecure  = "";
-                  $mail->SMTPAutoTLS = false;
-                  $mail->Port        = $smtp->port;
-                  // $mail->SMTPSecure  = $smtp->secure;
-                  $mail->isHTML(true);
+                  // Validate the fields
+                  $validate = $mailer->validateFields($request, $required);
 
-                  // Check for BCc
-                  if (isset($fields["sendCopy"]) === true && $fields["sendCopy"] === true) {
-                    // Get mail and name
-                    $rName  = $request[$fields["nameField"]];
-                    $rEmail = $request[$fields["emailField"]];
-                    // Add bcc
-                    $mail->addBCC($rEmail, $rName);
-                  }
+                  // Check if validate returned true
+                  if ($validate === true) {
 
-                  // Mail variables
-                  $mail->setFrom($from->email, $from->name);
+                    // We have validated all fields
+                    // Now we can set up the variables and hooks in order to send the mail
+                    // Require PHPMailer
+                    require(__DIR__ . "/../vendor/autoload.php");
 
-                  // Add reciepient
-                  foreach ($toArray as $to) {
-                    $mail->addAddress($to->email);
-                  }
+                    // Declare class
+                    $mail = new PHPMailer(true);
 
-                  // Set subject and message
-                  $mail->Subject = $mailer->replaceVariable($subject, $request);
-                  $mail->Body    = $mailer->replaceVariable($message, $request) . "\n";
+                    // Set settings
+                    $mail->SMTPDebug = 0;
+                    $mail->isSMTP();
+                    $mail->Host        = $smtp->host;
+                    $mail->SMTPAuth    = true;
+                    $mail->Username    = $smtp->username;
+                    $mail->Password    = $smtp->password;
+                    $mail->SMTPSecure  = "";
+                    $mail->SMTPAutoTLS = false;
+                    $mail->Port        = $smtp->port;
+                    // $mail->SMTPSecure  = $smtp->secure;
+                    $mail->isHTML(true);
 
-                  // Add files
-                  if (empty($_FILES) === false) {
+                    // Check for BCc
+                    if (isset($fields["sendCopy"]) === true && $fields["sendCopy"] === true) {
+                      // Get mail and name
+                      $rName  = $request[$fields["nameField"]];
+                      $rEmail = $request[$fields["emailField"]];
+                      // Add bcc
+                      $mail->addBCC($rEmail, $rName);
+                    }
 
-                    // Set files
-                    $files = $_FILES[array_key_first($_FILES)];
+                    // Mail variables
+                    $mail->setFrom($from->email, $from->name);
 
-                    // Loop through temp names
-                    foreach ($files["tmp_name"] as $key => $file) {
+                    // Add reciepient
+                    foreach ($toArray as $to) {
+                      $mail->addAddress($to->email);
+                    }
 
-                      // Store real name and temp name
-                      $name = $files["name"][$key];
+                    // Set subject and message
+                    $mail->Subject = $mailer->replaceVariable($subject, $request);
+                    $mail->Body    = $mailer->replaceVariable($message, $request) . "\n";
 
-                      // Move file to temp folder
-                      if (move_uploaded_file($file, sys_get_temp_dir() . basename($name)) === true) {
-                        // Add to mailer
-                        $mail->addAttachment(sys_get_temp_dir() . basename($name));
+                    // Add files
+                    if (empty($_FILES) === false) {
+
+                      // Set files
+                      $files = $_FILES[array_key_first($_FILES)];
+
+                      // Loop through temp names
+                      foreach ($files["tmp_name"] as $key => $file) {
+
+                        // Store real name and temp name
+                        $name = $files["name"][$key];
+
+                        // Move file to temp folder
+                        if (move_uploaded_file($file, sys_get_temp_dir() . basename($name)) === true) {
+                          // Add to mailer
+                          $mail->addAttachment(sys_get_temp_dir() . basename($name));
+                        }
                       }
                     }
-                  }
 
-                  // Try sending
-                  try {
-                    $mail->send();
-                  } catch (Exception $e) {
-                    wp_send_json_error("Error sending e-mail");
+                    // Try sending
+                    try {
+
+                      // Store
+                      if ($mail->send()) {
+                        wp_send_json_success("E-mail successfully sent!");
+                      }
+
+                    } catch (Exception $e) {
+                      wp_send_json_error("Error sending e-mail");
+                    }
+
+                  } else {
+                    // Throw error
+                    wp_send_json_error($validate);
                   }
 
                 } else {
-                  // Throw error
-                  wp_send_json_error($validate);
+                  wp_send_json_error("Please configure the SMTP and ReCAPTCHA settings correctly.");
                 }
-
-              } else {
-                wp_send_json_error("Please configure the SMTP and ReCAPTCHA settings correctly.");
               }
+            } else {
+              wp_send_json_error("Unable to sanitize input.");
             }
           } else {
-            wp_send_json_error("Unable to sanitize input.");
+            wp_send_json_error("Honeypot validation failed.");
           }
-        } else {
-          wp_send_json_error("Honeypot validation failed.");
         }
+
+      } else {
+        // Recaptcha didn't validate
+          wp_send_json_error("ReCAPTCHA didn't pass validation.");
       }
     }
 

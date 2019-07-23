@@ -14,7 +14,6 @@
   action="<?= $form->action; ?>"
   data-mailer
   data-mailer-site="<?= $form->recaptcha["key_site"]; ?>"
-  data-mailer-secret="<?= $form->recaptcha["key_secret"]; ?>"
   method="post"
   class=""
   enctype="multipart/form-data"

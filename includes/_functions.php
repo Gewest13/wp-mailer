@@ -26,6 +26,22 @@
     }
   }
 
+  // Get ssl page
+  if (function_exists("getSslPage") === false) {
+    function getSslPage($url) {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+      curl_setopt($ch, CURLOPT_HEADER, false);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_REFERER, $url);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      $result = curl_exec($ch);
+      curl_close($ch);
+      return $result;
+    }
+  }
+
   // Clear wp_footer
   if (function_exists("remove_all_actions") === true) {
     // Clear the wp_footer
@@ -41,7 +57,11 @@
       $directory = get_template_directory_uri();
       $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
 
+      // Get the field that holds the site key
+      $site = get_field("recaptcha_key_site", "forms_settings");
+
       // Return the script field with the file
+      echo "<script src='https://www.google.com/recaptcha/api.js?render={$site}'></script>\n";
       echo "<script src='{$file}' type='module'></script>\n";
 
     });
