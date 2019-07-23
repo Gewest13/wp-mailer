@@ -517,6 +517,7 @@
                 // Setup field array to be placed in $data array
                 $f = (object) [
                   "name"  => $field->name,
+                  "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
                   "field" => $format
                 ];
@@ -532,7 +533,8 @@
 
                 // Setup field array to be placed in $data array
                 $f = (object) [
-                  "field" => $format
+                  "field" => $format,
+                  "type"  => $field->acf_fc_layout
                 ];
 
                 break;
@@ -563,6 +565,7 @@
                 // Setup field array to be placed in $data array
                 $f = (object) [
                   "name"  => $field->name,
+                  "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
                   "field" => $boxes
                 ];
@@ -579,6 +582,7 @@
                 // Setup field array to be placed in $data array
                 $f = (object) [
                   "name"  => $field->name,
+                  "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
                   "field" => $format
                 ];
@@ -604,6 +608,7 @@
                 // Setup field array to be placed in $data array
                 $f = (object) [
                   "name"  => $field->name,
+                  "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
                   "field" => $format
                 ];
@@ -621,6 +626,7 @@
                 // Setup field array to be placed in $data array
                 $f = (object) [
                   "name"  => $field->name,
+                  "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
                   "field" => $format
                 ];
@@ -650,7 +656,6 @@
           $settings = get_fields("forms_settings");
 
           // Set some setting values
-          $data["settings"]                = get_fields("forms_settings");
           $data["action"]                  = admin_url("admin-ajax.php");
           $data["recaptcha"]["key_site"]   = $settings["recaptcha"]->key_site;
           $data["recaptcha"]["key_secret"] = $settings["recaptcha"]->key_secret;
