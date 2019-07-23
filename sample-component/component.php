@@ -10,7 +10,7 @@
       // Get the form
       $form = $mailer->getForm($id);
 ?>
-<form action="<?= $form->action; ?>" method="post" class="" enctype="multipart/form-data" style="margin: 200px">
+<form action="<?= $form->action; ?>" data-wp-mailer method="post" class="" enctype="multipart/form-data" style="margin: 200px">
 <?php
   foreach ($form->fields as $f) :
     echo $mailer->parseField($f);

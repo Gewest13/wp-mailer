@@ -16,6 +16,7 @@
     private $options;
     private $fields;
     public $honey;
+    public $id;
 
     // Set constructor function for class
     public function __construct () {
@@ -80,6 +81,14 @@
         "shoulder",
         "knees",
         "toes"
+      ];
+
+      // Add the recaptcha values to an object
+      // To be parsed within the front-end
+      // And retrieved from the _action
+      $this->recaptcha = [
+        "key"    => "",
+        "secret" => ""
       ];
 
     }

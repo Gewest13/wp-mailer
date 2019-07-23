@@ -31,4 +31,9 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 ## To do
 
   1. Javascript integration (AJAX)
-  3. Add ReCAPTCHA
+  2. Add ReCAPTCHA
+
+  ---
+
+  3. Add field-type to getForm function (object)
+  4. Remove classes from form cpt page (fields) and add them manually

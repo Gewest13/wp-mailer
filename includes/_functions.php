@@ -42,7 +42,7 @@
       $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
 
       // Return the script field with the file
-      echo "<script src='{$file}'></script>\n";
+      echo "<script src='{$file}' type='module'></script>\n";
 
     });
   }
