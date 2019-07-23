@@ -15,9 +15,10 @@
     private $labels;
     private $options;
     private $fields;
+    public $honey;
 
     // Set constructor function for class
-    function __construct () {
+    public function __construct () {
 
       // Post type labels
       $this->labels = [
@@ -71,6 +72,14 @@
       $this->fields = (object) [
         "settings" => __DIR__ . "/fields/settings.json",
         "fields"   => __DIR__ . "/fields/fields.json"
+      ];
+
+      // Set some random honeypot fields to be randomly parsed within the field
+      $this->honey = [
+        "head",
+        "shoulder",
+        "knees",
+        "toes"
       ];
 
     }
@@ -626,12 +635,15 @@
 
           // Add the form id
           $data["fields"][] = (object) [
-            "field" => "<input type='hidden' name='form_id' value='{$form_id}' />"
+            "field" => "<!-- ID --><input type='hidden' name='form_id' value='{$form_id}' />"
           ];
+
+          // Get random value from the honey array
+          $random = $this->honey[(rand(0, (count($this->honey) - 1)))];
 
           // Add the form id
           $data["fields"][] = (object) [
-            "field" => "<input type='hidden' name='credit_nr' value='' />"
+            "field" => "<!-- Honey --><input type='hidden' name='{$random}' />"
           ];
 
           // Set some setting values

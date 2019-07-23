@@ -20,9 +20,14 @@
         // Get the form
         $form = $mailer->getFormPost($_REQUEST["form_id"]);
 
+        // Get the last field of array
+        $honeyValue = end($_REQUEST);
+        $honeyKey   = key(array_reverse($_REQUEST));
+
         // Check if not empty
         // If not, the form is valid
-        if (empty($form) === false && is_object($form) === true) {
+        // Also, check for honeypot occurence
+        if (empty($form) === false && is_object($form) === true && in_array($honeyKey, $mailer->honey) === true && empty($honeyValue) === true) {
 
           // Sanitize data
           $request = $mailer->sanitizeData($_REQUEST);
@@ -148,6 +153,8 @@
           } else {
             wp_send_json_error("Unable to sanitize input.");
           }
+        } else {
+          wp_send_json_error("Honeypot validation failed.");
         }
       }
     }
