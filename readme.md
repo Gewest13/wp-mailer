@@ -16,7 +16,7 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
   4. Fill in all required information within the `Settings` page.
   5. Create a new form and add any field to your liking.
-  6. Add the `/sample-component/` to your list of components/
+  6. Add the `/sample-component/` to your list of components/. Please note that the form will require some predefined settings like an `action`, `data-wp-mailer` and `method`.
   7. At last, please include `wp_footer()` before the ending of your `</body>` tag. Please not that the entire function will be cleared and will only return the javascript file that will take care of the asynchronous requests.
 
 ## Functions

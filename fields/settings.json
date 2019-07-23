@@ -114,7 +114,7 @@
                     {
                         "key": "field_5d2efd8e600bd",
                         "label": "Key (Site)",
-                        "name": "siteKey",
+                        "name": "key_site",
                         "type": "text",
                         "instructions": "",
                         "required": 1,

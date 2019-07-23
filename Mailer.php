@@ -15,8 +15,8 @@
     private $labels;
     private $options;
     private $fields;
-    public $honey;
-    public $id;
+    public  $honey;
+    public  $recaptcha;
 
     // Set constructor function for class
     public function __construct () {
@@ -82,15 +82,6 @@
         "knees",
         "toes"
       ];
-
-      // Add the recaptcha values to an object
-      // To be parsed within the front-end
-      // And retrieved from the _action
-      $this->recaptcha = [
-        "key"    => "",
-        "secret" => ""
-      ];
-
     }
 
     // Create post_type to make "Mail"
@@ -652,12 +643,17 @@
 
           // Add the form id
           $data["fields"][] = (object) [
-            "field" => "<!-- Honey --><input type='hidden' name='{$random}' />"
+            "field" => "<!-- Honey --><input type='hidden' class='js-last-field' name='{$random}' />"
           ];
 
+          // Get settings
+          $settings = get_fields("forms_settings");
+
           // Set some setting values
-          $data["settings"] = get_fields("forms_settings");
-          $data["action"]   = admin_url("admin-ajax.php");
+          $data["settings"]                = get_fields("forms_settings");
+          $data["action"]                  = admin_url("admin-ajax.php");
+          $data["recaptcha"]["key_site"]   = $settings["recaptcha"]->key_site;
+          $data["recaptcha"]["key_secret"] = $settings["recaptcha"]->key_secret;
 
           // Return fields
           return (object) $data;
