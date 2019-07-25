@@ -1,5 +1,8 @@
 <?php
 
+  // Set namespace
+  namespace Mailer;
+
   // =============
   // This class uses array to object conversion of ACF fields
   // Please leave this function included
