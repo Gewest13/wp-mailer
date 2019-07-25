@@ -8,10 +8,15 @@
             "email": "jrtderonde@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": [
+          "Mailer\\": ""
+        ]
+    },
     "require": {
         "phpmailer/phpmailer": "~6.0"
     },
     "config": {
       "vendor-dir": "vendor"
-    },
+    }
 }
