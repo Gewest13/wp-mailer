@@ -43,7 +43,9 @@ class WPMailer {
 
       if (request.status >= 200 && request.status < 300) {
         if (json.success === true) {
-          console.log('success')
+          console.log(json)
+        } else {
+          console.log(json);
         }
       }
 
@@ -101,36 +103,3 @@ if (formEls.length > 0) {
     mailer.init();
   });
 }
-
-
-// // success true
-// {
-//   success: true,
-//   data: {
-//     message: 'your success message.'
-//   }
-// }
-//
-// // success false
-// {
-//   success: false,
-//   data: {
-//     message: 'server error'
-//   }
-// }
-//
-//
-// // success false
-// {
-//   success: false,
-//   data: [
-//     {
-//       field: 'file',
-//       error: 'File extension that you are trying to upload is not allowed'
-//     },
-//     {
-//       field: 'name',
-//       error: 'min chars 5'
-//     }
-//   ]
-// }

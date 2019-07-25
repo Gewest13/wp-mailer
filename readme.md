@@ -31,5 +31,4 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
 ## To do
 
-  1. Javascript integration => Field post, upload file, error responses.
   2. Remove classes from form page (fields) and add them manually

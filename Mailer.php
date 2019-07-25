@@ -387,10 +387,22 @@
 
             // Check if not empty
             if (empty($field) === true) {
-              $errors[$r->name] = "This field is required.";
+
+              // Return error
+              $errors[] = [
+                'field' => $r->name,
+                'error' => "This field is required."
+              ];
+
             } else {
               if ($this->switchValidation($r, $field) !== false) {
-                $errors[$r->name] = $this->switchValidation($r, $field);
+
+                // Return error
+                $errors[] = [
+                  'field' => $r->name,
+                  'error' => $this->switchValidation($r, $field)
+                ];
+
               }
             }
 
@@ -400,7 +412,13 @@
             if (isset($field) === true) {
               // Not required, but validate
               if ($this->switchValidation($r, $field) !== false) {
-                $errors[$r->name] = $this->switchValidation($r, $field);
+
+                // Return error
+                $errors[] = [
+                  'field' => $r->name,
+                  'error' => $this->switchValidation($r, $field)
+                ];
+                
               }
             }
 

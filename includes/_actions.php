@@ -153,11 +153,16 @@
 
                       // Store
                       if ($mail->send()) {
-                        wp_send_json_success("E-mail successfully sent!");
+                        // Send succes => Mail was sent!
+                        wp_send_json_success(
+                          ["message" => "E-mail successfully sent!"]
+                        );
                       }
 
                     } catch (Exception $e) {
-                      wp_send_json_error("Error sending e-mail");
+                      wp_send_json_error(
+                        ["message" => "Error sending e-mail"]
+                      );
                     }
 
                   } else {
@@ -166,20 +171,28 @@
                   }
 
                 } else {
-                  wp_send_json_error("Please configure the SMTP and ReCAPTCHA settings correctly.");
+                  wp_send_json_error(
+                    ["message" => "Please configure the SMTP and ReCAPTCHA settings correctly"]
+                  );
                 }
               }
             } else {
-              wp_send_json_error("Unable to sanitize input.");
+              wp_send_json_error(
+                ["message" => "Unable to sanitize input."]
+              );
             }
           } else {
-            wp_send_json_error("Honeypot validation failed.");
+            wp_send_json_error(
+              ["message" => "Honeypot validation failed."]
+            );
           }
         }
 
       } else {
         // Recaptcha didn't validate
-          wp_send_json_error("ReCAPTCHA didn't pass validation.");
+          wp_send_json_error(
+            ["message" => "ReCAPTCHA didn't pass validation."]
+          );
       }
     }
 
