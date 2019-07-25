@@ -6,7 +6,7 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
 ## Installation
 
-  Install with composer by calling `to-be-added`
+  Install with composer by calling `composer require gewest13/wp-mailer`
 
   Do this first.
 
