@@ -34,8 +34,7 @@
         <label for="<?= $field->name; ?>">
           <?= $field->label; ?>
         </label>
-        <?php endif; ?>
-        <?php
+        <?php endif; 
 
           // Switch between field types
           switch ($field->type) :

@@ -11,6 +11,7 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
   1. Clone the repository in your `server/` directory.
   2. Do a `composer install` inside the folder.
   3. Require or include the `server/wp-mailer/autoload.php` into your `functions.php` file.
+  4. Please note that a hook within Wordpress is including a javascript file into the footer. Import it as you like whenever you desire a bundle over multiple javascript files.
 
   When this is done a first form can be added.
 
@@ -27,8 +28,6 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
   1. Use `$mailer->getForm($id)` to get all form fields.
   2. Then, use a `foreach` loop to loop through all fields. `foreach ($mailer->getForm($id) as $name => $field)`.
   3. Inside the loop the `$field->field` variable will contain the entire html element so use `$mailer->parseField($field->field, "classes")` to parse it.
-  4. Label can be accessed through `$field->label` and the name can be accessed through `$field->name`.
-
-## To do
-
-  2. Remove classes from form page (fields) and add them manually
+  4. Label can be accessed through `$field->label`.
+  5. Name can be accessed through `$field->name`.
+  6. Field type can be accessed through `$field->type`.
