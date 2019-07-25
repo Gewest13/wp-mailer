@@ -26,7 +26,7 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
   1. Use `$mailer->getForm($id)` to get all form fields.
   2. Then, use a `foreach` loop to loop through all fields. `foreach ($mailer->getForm($id) as $name => $field)`.
-  3. Inside the loop the `$field->field` variable will contain the entire html element so use `$mailer->parseField($field->field)` to parse it.
+  3. Inside the loop the `$field->field` variable will contain the entire html element so use `$mailer->parseField($field->field, "classes")` to parse it.
   4. Label can be accessed through `$field->label` and the name can be accessed through `$field->name`.
 
 ## To do

@@ -41,8 +41,8 @@
                         "sub_fields": [
                             {
                                 "key": "field_5d2f139fbf167",
-                                "label": "Classes",
-                                "name": "classes",
+                                "label": "Name",
+                                "name": "name",
                                 "type": "text",
                                 "instructions": "",
                                 "required": 1,
@@ -53,7 +53,7 @@
                                     "id": ""
                                 },
                                 "default_value": "",
-                                "placeholder": "These are parsed as is",
+                                "placeholder": "",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -123,7 +123,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -148,25 +148,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f11dd3cebb",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -249,7 +230,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -293,25 +274,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f1073caba4",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -431,7 +393,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -450,7 +412,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -469,31 +431,12 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f1a3be5690",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "33",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -507,7 +450,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -574,7 +517,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -618,25 +561,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f105ecab9c",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -756,7 +680,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -800,25 +724,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f108ecabac",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -938,7 +843,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -963,25 +868,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f10b9cabb4",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -1083,7 +969,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "100",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1102,7 +988,7 @@
                                 "required": 1,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1121,31 +1007,12 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "33",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f11ea3cec3",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "33",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -1247,7 +1114,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1291,25 +1158,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f0e846c5b8",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -1429,7 +1277,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1473,25 +1321,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f142fd716c",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""
@@ -1553,7 +1382,7 @@
                                 "required": 0,
                                 "conditional_logic": 0,
                                 "wrapper": {
-                                    "width": "",
+                                    "width": "50",
                                     "class": "",
                                     "id": ""
                                 },
@@ -1597,25 +1426,6 @@
                                 },
                                 "default_value": "",
                                 "placeholder": "",
-                                "prepend": "",
-                                "append": "",
-                                "maxlength": ""
-                            },
-                            {
-                                "key": "field_5d2f1361bf160",
-                                "label": "Classes",
-                                "name": "classes",
-                                "type": "text",
-                                "instructions": "",
-                                "required": 1,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "50",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "placeholder": "These are parsed as is",
                                 "prepend": "",
                                 "append": "",
                                 "maxlength": ""

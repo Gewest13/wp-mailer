@@ -418,7 +418,7 @@
                   'field' => $r->name,
                   'error' => $this->switchValidation($r, $field)
                 ];
-                
+
               }
             }
 
@@ -499,7 +499,8 @@
         $data    = [];
 
         // Add the form action
-        $data["fields"][] = (object) [
+        $data["fields"]["action"] = (object) [
+          "type"  => "hidden",
           "field" => "<input type='hidden' name='action' value='sendMail' />"
         ];
 
@@ -529,7 +530,7 @@
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
 
                 // Set field
-                $format = "<input type='{$field->acf_fc_layout}' name='$field->name' class='$field->classes' placeholder='$field->placeholder' $required $min $max $id />";
+                $format = "<input type='{$field->acf_fc_layout}' name='{$field->name}' class='{{ classes }}' placeholder='{$field->placeholder}' $required $min $max $id />";
                 $format = $this->cleanField($format);
 
                 // Setup field array to be placed in $data array
@@ -546,7 +547,7 @@
               case "button" :
 
                 // Set field
-                $format = "<button type='{$field->type}' class='{$field->classes}'>{$field->text}</button>";
+                $format = "<button type='{$field->type}' class='{{ classes }}'>{$field->text}</button>";
                 $format = $this->cleanField($format);
 
                 // Setup field array to be placed in $data array
@@ -575,7 +576,7 @@
                   // Set up variables
                   $o = [];
                   $o["label"] = $option->label;
-                  $o["field"] = $this->cleanField("<label for='{$for}'>{$option->label}</label><input id='{$for}' type='{$field->acf_fc_layout}' name='{$field->name}[]' class='{$field->classes}' value='{$option->value}' $required />");
+                  $o["field"] = $this->cleanField("<label for='{$for}'>{$option->label}</label><input id='{$for}' type='{$field->acf_fc_layout}' name='{$field->name}[]' class='{{ classes }}' value='{$option->value}' $required />");
                   // Parse to data
                   $boxes[] = (object) $o;
                 }
@@ -595,7 +596,7 @@
                 // Set some variables
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
                 $required = (empty($field->required) === false) ? ' required' : null;
-                $format   = "<textarea name='{$field->name}' class='{$field->classes}' placeholder='{$field->placeholder}' $id $required></textarea>";
+                $format   = "<textarea name='{$field->name}' class='{{ classes }}' placeholder='{$field->placeholder}' $id $required></textarea>";
 
                 // Setup field array to be placed in $data array
                 $f = (object) [
@@ -612,7 +613,7 @@
                 // Set some variables
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
                 $required = (empty($field->required) === false) ? ' required' : null;
-                $format   = "<select name='{$field->name}' class='{$field->classes}' $id $required><option value=''>{$field->label}</option>";
+                $format   = "<select name='{$field->name}' class='{{ classes }}' $id $required><option value=''>{$field->label}</option>";
 
                 // Loop
                 foreach ($field->options as $option) {
@@ -639,7 +640,7 @@
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
                 $required = (empty($field->required) === false) ? ' required' : null;
                 $multiple = (empty($field->multiple) === false) ? ' multiple' : null;
-                $format   = "<input name='{$field->name}[]' type='{$field->acf_fc_layout}' class='{$field->classes}' accept='{$field->filetypes}' $id $required $multiple />";
+                $format   = "<input name='{$field->name}[]' type='{$field->acf_fc_layout}' class='{{ classes }}' accept='{$field->filetypes}' $id $required $multiple />";
 
                 // Setup field array to be placed in $data array
                 $f = (object) [
@@ -654,11 +655,12 @@
             endswitch;
 
             // Parse to array
-            $data["fields"][] = $f;
+            $data["fields"][$field->name] = $f;
           }
 
           // Add the form id
-          $data["fields"][] = (object) [
+          $data["fields"]["form_id"] = (object) [
+            "type"  => "hidden",
             "field" => "<!-- ID --><input type='hidden' name='form_id' value='{$form_id}' />"
           ];
 
@@ -666,7 +668,8 @@
           $random = $this->honey[(rand(0, (count($this->honey) - 1)))];
 
           // Add the form id
-          $data["fields"][] = (object) [
+          $data["fields"]["honeypot"] = (object) [
+            "type"  => "hidden",
             "field" => "<!-- Honey --><input type='hidden' class='js-last-field' name='{$random}' />"
           ];
 
@@ -690,12 +693,23 @@
     }
 
     // Parse field function
-    public function parseField ($field) {
+    public function parseField ($field, string $classes = "") {
+
       if (isset($field->field) === true) {
         if (is_array($field->field) === true) {
+          // Grab field
           $return = $this->implodeField($field->field, "field", " ");
+
+          // Replace string with classes
+          $return = str_replace("{{ classes }}", $classes, $return);
+
         } else {
+          // Grab field
           $return = $field->field;
+
+          // Replace string with classes
+          $return = str_replace("{{ classes }}", $classes, $return);
+
         }
         return $return . "\n";
       }
