@@ -506,7 +506,13 @@
 
         // Get fields
         $fields = get_fields($form_id);
+
+        // Check if it exists
         if (empty($fields) === false) {
+
+          // Check if multi columns are supported
+          if ($fields["multiColumn"] === true) $mc = true; else $mc = false;
+
           // Loop through the fields
           foreach ($fields["fields"] as $key => $field) {
 
@@ -538,7 +544,8 @@
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
-                  "field" => $format
+                  "field" => $format,
+                  "multi" => ($mc === true) ? $field->columns : ''
                 ];
 
                 break;
@@ -553,7 +560,8 @@
                 // Setup field array to be placed in $data array
                 $f = (object) [
                   "field" => $format,
-                  "type"  => $field->acf_fc_layout
+                  "type"  => $field->acf_fc_layout,
+                  "multi" => ($mc === true) ? $field->columns : ''
                 ];
 
                 break;
@@ -586,7 +594,8 @@
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
-                  "field" => $boxes
+                  "field" => $boxes,
+                  "multi" => ($mc === true) ? $field->columns : ''
                 ];
 
                 break;
@@ -603,7 +612,8 @@
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
-                  "field" => $format
+                  "field" => $format,
+                  "multi" => ($mc === true) ? $field->columns : ''
                 ];
 
                 break;
@@ -629,7 +639,8 @@
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
-                  "field" => $format
+                  "field" => $format,
+                  "multi" => ($mc === true) ? $field->columns : ''
                 ];
 
                 break;
@@ -647,7 +658,8 @@
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
                   "label" => $field->label,
-                  "field" => $format
+                  "field" => $format,
+                  "multi" => ($mc === true) ? $field->columns : ''
                 ];
 
                 break;
@@ -695,7 +707,7 @@
     // Parse field function
     public function parseField ($field, string $classes = "") {
 
-      if (isset($field->field) === true) {
+      if (empty($field->field) === false) {
         if (is_array($field->field) === true) {
           // Grab field
           $return = $this->implodeField($field->field, "field", " ");

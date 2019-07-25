@@ -7,7 +7,7 @@
     $id = $component->form;
 
     // Check if form exists
-    if (empty($id) === false && is_numeric($id) === true) :
+    if (empty($id) === false && is_numeric($id) === true && get_post($id) !== NULL) :
 
       // Get the form
       $form = $mailer->getForm($id);
@@ -15,63 +15,52 @@
       // Shift array for ease
       $fields = $form->fields;
 ?>
-<form
-  action="<?= $form->action; ?>"
-  data-mailer
-  data-mailer-site="<?= $form->recaptcha["key_site"]; ?>"
-  method="post"
-  class="js-form"
-  enctype="multipart/form-data">
+<div class="component component--dark form">
+  <form
+    action="<?= $form->action; ?>"
+    data-mailer
+    data-mailer-site="<?= $form->recaptcha["key_site"]; ?>"
+    method="post"
+    class="js-form container form__container"
+    enctype="multipart/form-data">
+    <?php
 
-  <!-- Add the action -->
-  <?= $mailer->parseField($fields["action"]) ?>
+      // Loop through all the fields
+      foreach ($fields as $field) :
+        if ($field->type !== "hidden") :
+    ?>
+      <div class="form__group<?= (isset ($field->multi) && $field->multi === "half") ? " form__group--half" : "" ?>">
+        <?php if (empty($field->label) === false) : ?>
+        <label for="<?= $field->name; ?>">
+          <?= $field->label; ?>
+        </label>
+        <?php endif; ?>
+        <?php
 
-  <div class="component component--dark form">
-    <div class="container form__container">
+          // Switch between field types
+          switch ($field->type) :
 
-      <div class="form__group">
-        <label for=""><?= $fields["firstName"]->label; ?></label>
-        <?= $mailer->parseField($fields["firstName"]) ?>
+            // If button
+            case "button" :
+              echo $mailer->parseField($field, "button form__submit");
+              break;
+
+            // If select
+            case "select" :
+              echo $mailer->parseField($field, "js-select select__hidden");
+              break;
+
+            // Else
+            default:
+              echo $mailer->parseField($field);
+
+          endswitch;
+        ?>
       </div>
-
-      <div class="form__group form__group--half">
-        <label for=""><?= $fields["lastName"]->label; ?></label>
-        <?= $mailer->parseField($fields["lastName"]) ?>
-      </div>
-
-      <div class="form__group form__group--half">
-        <label for=""><?= $fields["email"]->label; ?></label>
-        <?= $mailer->parseField($fields["email"]) ?>
-      </div>
-
-      <div class="form__group form__group--half">
-        <label for=""><?= $fields["interests"]->label; ?></label>
-        <?= $mailer->parseField($fields["interests"], "js-select select__hidden") ?>
-      </div>
-
-      <div class="form__group">
-        <label for=""><?= $fields["phone"]->label; ?></label>
-        <?= $mailer->parseField($fields["phone"]) ?>
-      </div>
-
-      <div class="form__group">
-        <label for=""><?= $fields["company"]->label; ?></label>
-        <?= $mailer->parseField($fields["company"]) ?>
-      </div>
-
-      <div class="form__group">
-        <label for=""><?= $fields["message"]->label; ?></label>
-        <?= $mailer->parseField($fields["message"]) ?>
-      </div>
-
-      <div class="form__group">
-        <?= $mailer->parseField($fields["button"], "button form__submit") ?>
-      </div>
-    </div>
-  </div>
-
-  <!-- Last fields: Form ID and Honeypot -->
-  <?= $mailer->parseField($fields["form_id"]) ?>
-  <?= $mailer->parseField($fields["honeypot"]) ?>
-</form>
-<?php endif; endif;
+    <?php else : ?>
+      <?= $mailer->parseField($field); ?>
+    <?php endif;
+        endforeach; ?>
+  </form>
+</div>
+<?php endif; endif; ?>
