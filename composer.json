@@ -1,22 +1,20 @@
 {
-    "name": "gewest13/wp-mailer",
-    "description": "A Wordpress module that adds a formbuilder.",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Jim de Ronde",
-            "email": "jrtderonde@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": [
-          "Mailer\\": ""
-        ]
-    },
-    "require": {
-        "phpmailer/phpmailer": "~6.0"
-    },
-    "config": {
-      "vendor-dir": "vendor"
-    }
+	"name": "gewest13/wp-mailer",
+	"description": "A Wordpress module that adds a formbuilder.",
+	"type": "library",
+	"authors": [{
+		"name": "Jim de Ronde",
+		"email": "jrtderonde@gmail.com"
+	}],
+	"autoload": {
+		"psr-4": {
+			"Mailer\\": ""
+		}
+	},
+	"require": {
+		"phpmailer/phpmailer": "~6.0"
+	},
+	"config": {
+		"vendor-dir": "vendor"
+	}
 }
