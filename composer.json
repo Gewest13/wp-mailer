@@ -1,8 +1,17 @@
 {
+    "name": "gewest13/wp-mailer",
+    "description": "A Wordpress module that adds a formbuilder.",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Jim de Ronde",
+            "email": "jrtderonde@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "~6.0"
+    },
     "config": {
       "vendor-dir": "vendor"
     },
-    "require": {
-      "phpmailer/phpmailer": "~6.0"
-    }
-  }
+}

@@ -1,5 +1,8 @@
 <?php
 
+  // Set namespace
+  namespace Mailer;
+
   // =============
   // ----
   // Wordpress Mailer module
