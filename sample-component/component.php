@@ -15,7 +15,7 @@
   data-mailer
   data-mailer-site="<?= $form->recaptcha["key_site"]; ?>"
   method="post"
-  class=""
+  class="js-form"
   enctype="multipart/form-data"
   style="margin: 200px">
 <?php

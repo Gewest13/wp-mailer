@@ -2,118 +2,135 @@
 class WPMailer {
 
   // Constructor class
-  constructor () {
+  constructor (index) {
     // Dom elements
-    this.dom = {
-      forms: document.querySelectorAll('form[data-mailer]')
+    this.DOM = {
+      form: document.querySelectorAll('form[data-mailer]')[index]
+    }
+
+    this.state = {
+      fields: [],
+      action: this.DOM.form.getAttribute('action'),
+      method: this.DOM.form.getAttribute('method'),
     }
   }
 
   // Submit form function
-  submitForm = (event) => {
+  submitForm = (e) => {
 
     // Prevent posting the form
-    event.preventDefault();
+    e.preventDefault();
 
-    // Format the string in order to post correctly
+    // Set up formData object
+    this.state.fields = new FormData(this.DOM.form);
+
     // Get the action url
-    let action = event.srcElement.getAttribute('action');
+    const url = this.state.action;
 
-    // Format the url
-    let string = this.formatString(event.srcElement);
+    // Do the request to action url
+    const request = new XMLHttpRequest();
 
-    // Setup the url for the ajax request
-    let url = `${action}${string}`;
+    // Send request to ajax url
+    request.open('POST', url, true);
 
-    // Set up the url
-    if (url !== null || url !== "") {
-      
-      this.makeRequest(url);
-      // console.log(url);
-    }
-  }
+    request.onload = () => {
 
-  // Ajax request function
-  makeRequest = (url) => {
+      // Check if the readyState is correct
+      if (request.readyState !== 4) return;
 
-    // Check if given
-    if (url !== null) {
+      // Get response and decode json
+      const json = JSON.parse(request.responseText);
 
-      // DO request
-      fetch(url)
-      .then(
-        function(response) {
-          console.log(response);
+      if (request.status >= 200 && request.status < 300) {
+        if (json.success === true) {
+          console.log('success')
         }
-      )
-      .catch(function(err) {
-        console.log(err);
-      });
-    }
-  }
+      }
 
-  // formatString for ajax request
-  formatString = (form) => {
+      if (json.success === false && json.data && json.data.length > 0) {
+        let el;
 
-    // Begin the variable
-    let string = "";
+        // loop through data (errors)
+        [...json.data].forEach((error) => {
+          el = this.DOM.form.querySelector(`[name="${error.field}"]`);
 
-    // Check if not null
-    if (form !== null) {
+          // add error message below el
 
-      // Loop through the form elements
-      [...form.elements].forEach((input) => {
-        // Add name and value
-        if (string !== "") {
-          string += `&${input.name}=${input.value}`;
-        } else {
-          string += `?${input.name}=${input.value}`;
-        }
-      });
+        });
+
+      }
     }
 
-    // Check and return
-    if (string !== "") {
-      return string;
-    } else {
-      return false;
-    }
+    // Send the request to action url
+    request.send(this.state.fields);
   }
 
   // Init
   init = () => {
-    // Check if there are any forms within the dom
-    if (this.dom.forms.length > 0) {
 
-      // There are forms
-      this.dom.forms.forEach((form) => {
+    // Get the site key
+    let site = this.DOM.form.getAttribute('data-mailer-site');
 
-        // Get the site key
-        let site = form.getAttribute('data-mailer-site');
+    // Get the last field that's been placed within the field
+    let last = this.DOM.form.querySelector('.js-last-field');
 
-        // Get the last field that's been placed within the field
-        let last = form.querySelector('.js-last-field');
-
-        // Add the recaptcha to the form
-        grecaptcha.ready(function() {
-          grecaptcha.execute(site, {action: 'homepage'}).then(function(token) {
-            // Add the recaptcha field to the form
-            let field = `<input type='hidden' name='recaptcha' value='${token}' />`;
-            last.insertAdjacentHTML('beforebegin', field);
-          });
-        });
-
-        // Add event listener for form post
-        form.addEventListener('submit', this.submitForm);
-
+    // Add the recaptcha to the form
+    grecaptcha.ready(() => {
+      grecaptcha.execute(site, {action: 'homepage'}).then((token) => {
+        // Add the recaptcha field to the form
+        let field = `<input type='hidden' name='recaptcha' value='${token}' />`;
+        last.insertAdjacentHTML('beforebegin', field);
       });
-    }
+    });
+
+    // Add event listener for form post
+    this.DOM.form.addEventListener('submit', this.submitForm);
   }
 }
 
 // Export
 export default WPMailer;
 
-// Initialize
-let Mailer = new WPMailer;
-Mailer.init();
+// Get all forms
+const formEls = document.querySelectorAll('form[data-mailer]');
+
+// Loop through forms and make instance of class if form exists
+if (formEls.length > 0) {
+  [...formEls].forEach((el, index) => {
+    const mailer = new WPMailer(index);
+    mailer.init();
+  });
+}
+
+
+// // success true
+// {
+//   success: true,
+//   data: {
+//     message: 'your success message.'
+//   }
+// }
+//
+// // success false
+// {
+//   success: false,
+//   data: {
+//     message: 'server error'
+//   }
+// }
+//
+//
+// // success false
+// {
+//   success: false,
+//   data: [
+//     {
+//       field: 'file',
+//       error: 'File extension that you are trying to upload is not allowed'
+//     },
+//     {
+//       field: 'name',
+//       error: 'min chars 5'
+//     }
+//   ]
+// }
