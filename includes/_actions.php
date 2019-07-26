@@ -18,15 +18,29 @@
       // Get all the general options
       $settings = get_fields("forms_settings");
 
-      // Validate the recaptcha
-      $validate = $_REQUEST["recaptcha"];
+      // Check if recaptcha is given
+      if (empty($_REQUEST["recaptcha"]) === false) {
 
-      // Format the url for the request
-      $url = "https://www.google.com/recaptcha/api/siteverify?secret={$settings["recaptcha"]->key_secret}&response={$validate}";
+        // Validate the recaptcha
+        $validate = $_REQUEST["recaptcha"];
 
-      // Catch response for the recaptcha
-      $response = getSslPage($url);
-      $response = json_decode($response);
+        // Format the url for the request
+        $url = "https://www.google.com/recaptcha/api/siteverify?secret={$settings["recaptcha"]->key_secret}&response={$validate}";
+
+        // Catch response for the recaptcha
+        $response = getSslPage($url);
+        $response = json_decode($response);
+
+      } else {
+
+        // Die!
+        wp_send_json_error(
+          ["message" => "Recaptcha wasn't added to the script"]
+        );
+
+        wp_die();
+
+      }
 
       // See if success
       if ($response->success === true) {
