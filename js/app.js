@@ -1,89 +1,84 @@
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-// WP Mailer class
-class WPMailer {
-  // Constructor class
+class Form {
   constructor(index) {
-    _defineProperty(this, "submitForm", e => {
-      // Prevent posting the form
-      e.preventDefault(); // Set up formData object
-
-      this.state.fields = new FormData(this.DOM.form); // Get the action url
-
-      const url = this.state.action; // Do the request to action url
-
-      const request = new XMLHttpRequest(); // Send request to ajax url
-
-      request.open('POST', url, true);
-
-      request.onload = () => {
-        // Check if the readyState is correct
-        if (request.readyState !== 4) return; // Get response and decode json
-
-        const json = JSON.parse(request.responseText);
-
-        if (request.status >= 200 && request.status < 300) {
-          if (json.success === true) {
-            console.log(json);
-          } else {
-            console.log(json);
-          }
-        }
-
-        if (json.success === false && json.data && json.data.length > 0) {
-          let el; // loop through data (errors)
-
-          [...json.data].forEach(error => {
-            el = this.DOM.form.querySelector(`[name="${error.field}"]`); // add error message below el
-          });
-        }
-      }; // Send the request to action url
-
-
-      request.send(this.state.fields);
-    });
-
-    _defineProperty(this, "init", () => {
-      // Get the site key
-      let site = this.DOM.form.getAttribute('data-mailer-site'); // Get the last field that's been placed within the field
-
-      let last = this.DOM.form.querySelector('.js-last-field'); // Add the recaptcha to the form
-
-      grecaptcha.ready(() => {
-        grecaptcha.execute(site, {
-          action: 'homepage'
-        }).then(token => {
-          // Add the recaptcha field to the form
-          let field = `<input type='hidden' name='recaptcha' value='${token}' />`;
-          last.insertAdjacentHTML('beforebegin', field);
-        });
-      }); // Add event listener for form post
-
-      this.DOM.form.addEventListener('submit', this.submitForm);
-    });
-
-    // Dom elements
     this.DOM = {
-      form: document.querySelectorAll('form[data-mailer]')[index]
+      form: document.querySelectorAll('.js-form')[index]
     };
+
     this.state = {
       fields: [],
       action: this.DOM.form.getAttribute('action'),
-      method: this.DOM.form.getAttribute('method')
+      method: this.DOM.form.getAttribute('method'),
+      siteKey: this.DOM.form.getAttribute('data-mailer-site')
     };
-  } // Submit form function
 
+    this.request = null;
+  }
 
-} // Export
+  submit = (e) => {
+    // prevent from posting the form
+    e.preventDefault();
 
+    this.state.fields = new FormData(this.DOM.form);
 
-export default WPMailer; // Get all forms
+    this.request = new XMLHttpRequest();
+    this.request.open(this.state.method, this.state.action, true);
 
-const formEls = document.querySelectorAll('form[data-mailer]'); // Loop through forms and make instance of class if form exists
+    this.request.onload = () => {
+      if (this.request.readyState !== 4) return;
 
-if (formEls.length > 0) {
-  [...formEls].forEach((el, index) => {
-    const mailer = new WPMailer(index);
-    mailer.init();
-  });
+      // clear validation errors from previous submit
+      const errorEls = this.DOM.form.querySelectorAll('.form__error')
+      if (errorEls.length > 0) [...errorEls].forEach((el) => el.remove());
+
+      const json = JSON.parse(this.request.responseText);
+
+      if (this.request.status >= 200 && this.request.status < 300) {
+        if (json.success) {
+          console.log('success', json);
+        }
+
+        if (!json.success) {
+          console.log('error', json);
+
+          if (json.data && json.data.length > 0) {
+            let el;
+
+            // loop through data (errors)
+            [...json.data].forEach((error) => {
+              // this is where the validation errors logic happens
+
+              // get the field that has a validation error
+              el = this.DOM.form.querySelector(`[name="${error.field}"]`);
+
+              console.log(el);
+            });
+          } else {
+            // server error
+
+            console.log('error', json);
+          }
+        }
+      }
+    };
+
+    this.request.send(this.state.fields);
+  }
+
+  init() {
+    // add recaptcha to the form
+    window.grecaptcha.ready(() => {
+      window.grecaptcha.execute(this.state.siteKey, { action: 'homepage' }).then((token) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'recaptcha';
+        input.value = token;
+
+        this.DOM.form.insertBefore(input, this.DOM.form.lastElementChild);
+      });
+    });
+
+    this.DOM.form.addEventListener('submit', this.submit);
+  }
 }
+
+export default Form;
