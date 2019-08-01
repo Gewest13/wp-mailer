@@ -18,73 +18,87 @@
       // Get all the general options
       $settings = get_fields("forms_settings");
 
-      // Validate the recaptcha
-      $validate = $_REQUEST["recaptcha"];
+      // Check if the form_id was set
+      if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
 
-      // Format the url for the request
-      $url = "https://www.google.com/recaptcha/api/siteverify?secret={$settings["recaptcha"]->key_secret}&response={$validate}";
+        // Get the form
+        $form = $mailer->getFormPost($_REQUEST["form_id"]);
 
-      // Catch response for the recaptcha
-      $response = getSslPage($url);
-      $response = json_decode($response);
+        // Get the last field of array
+        $honeyValue = end($_REQUEST);
+        $honeyKey   = key(array_reverse($_REQUEST));
 
-      // See if success
-      if ($response->success === true) {
+        // Check if not empty
+        // If not, the form is valid
+        // Also, check for honeypot occurence
+        if (empty($form) === false && is_object($form) === true && in_array($honeyKey, $mailer->honey) === true && empty($honeyValue) === true) {
 
-        // Check if the form_id was set
-        if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
+          // Sanitize data
+          $request = $mailer->sanitizeData($_REQUEST);
 
-          // Get the form
-          $form = $mailer->getFormPost($_REQUEST["form_id"]);
+          // Check if there are files
+          if (empty($_FILES) === false) {
+            // Shift to array
+            $request[key($_FILES)] = $_FILES[key($_FILES)];
+          }
 
-          // Get the last field of array
-          $honeyValue = end($_REQUEST);
-          $honeyKey   = key(array_reverse($_REQUEST));
+          // If request not false
+          if ($request !== false) {
 
-          // Check if not empty
-          // If not, the form is valid
-          // Also, check for honeypot occurence
-          if (empty($form) === false && is_object($form) === true && in_array($honeyKey, $mailer->honey) === true && empty($honeyValue) === true) {
+            // Get the fields
+            $fields = get_fields($form->ID);
 
-            // Sanitize data
-            $request = $mailer->sanitizeData($_REQUEST);
+            // Check if fields are given
+            if (empty($fields["fields"]) === false) {
 
-            // Check if there are files
-            if (empty($_FILES) === false) {
-              // Shift to array
-              $request[key($_FILES)] = $_FILES[key($_FILES)];
-            }
+              // Set some variables
+              $message   = $fields["message"];
+              $subject   = $fields["subject"];
+              $from      = $fields["from"][0];
+              $toArray   = $fields["to"];
 
-            // If request not false
-            if ($request !== false) {
+              // Chekc if given
+              (empty($settings["smtp"]) === false) ? $smtp = $settings["smtp"] : $smtp = false;
+              (empty($settings["recaptcha"]) === false) ? $recaptcha = $settings["recaptcha"] : $recaptcha = false;
 
-              // Get the fields
-              $fields = get_fields($form->ID);
+              // Check if smtp & recaptcha settings are given
+              if ($smtp !== false && $recaptcha !== false) {
 
-              // Check if fields are given
-              if (empty($fields["fields"]) === false) {
+                // Set required array
+                $required = $mailer->checkFields($fields["fields"]);
 
-                // Set some variables
-                $message   = $fields["message"];
-                $subject   = $fields["subject"];
-                $from      = $fields["from"][0];
-                $toArray   = $fields["to"];
+                // Validate the fields
+                $validate = $mailer->validateFields($request, $required);
 
-                // Chekc if given
-                (empty($settings["smtp"]) === false) ? $smtp = $settings["smtp"] : $smtp = false;
-                (empty($settings["recaptcha"]) === false) ? $recaptcha = $settings["recaptcha"] : $recaptcha = false;
+                // Check if validate returned true
+                if ($validate === true) {
 
-                // Check if smtp & recaptcha settings are given
-                if ($smtp !== false && $recaptcha !== false) {
+                  // Check if recaptcha is given
+                  if (empty($_REQUEST["recaptcha"]) === false) {
 
-                  // Set required array
-                  $required = $mailer->checkFields($fields["fields"]);
+                    // Validate the recaptcha
+                    $validate = $_REQUEST["recaptcha"];
 
-                  // Validate the fields
-                  $validate = $mailer->validateFields($request, $required);
+                    // Format the url for the request
+                    $url = "https://www.google.com/recaptcha/api/siteverify?secret={$settings["recaptcha"]->key_secret}&response={$validate}";
 
-                  // Check if validate returned true
-                  if ($validate === true) {
+                    // Catch response for the recaptcha
+                    $response = getSslPage($url);
+                    $response = json_decode($response);
+
+                  } else {
+
+                    // Die!
+                    wp_send_json_error(
+                      ["message" => "Recaptcha wasn't added to the script"]
+                    );
+
+                    wp_die();
+
+                  }
+
+                  // Check recaptcha
+                  if ($response->success === true) {
 
                     // We have validated all fields
                     // Now we can set up the variables and hooks in order to send the mail
@@ -166,33 +180,33 @@
                     }
 
                   } else {
-                    // Throw error
-                    wp_send_json_error($validate);
+                    // Recaptcha didn't validate
+                      wp_send_json_error(
+                        ["message" => "ReCAPTCHA didn't pass validation."]
+                      );
                   }
 
                 } else {
-                  wp_send_json_error(
-                    ["message" => "Please configure the SMTP and ReCAPTCHA settings correctly"]
-                  );
+                  // Throw error
+                  wp_send_json_error($validate);
                 }
+
+              } else {
+                wp_send_json_error(
+                  ["message" => "Please configure the SMTP and ReCAPTCHA settings correctly"]
+                );
               }
-            } else {
-              wp_send_json_error(
-                ["message" => "Unable to sanitize input."]
-              );
             }
           } else {
             wp_send_json_error(
-              ["message" => "Honeypot validation failed."]
+              ["message" => "Unable to sanitize input."]
             );
           }
-        }
-
-      } else {
-        // Recaptcha didn't validate
+        } else {
           wp_send_json_error(
-            ["message" => "ReCAPTCHA didn't pass validation."]
+            ["message" => "Honeypot validation failed."]
           );
+        }
       }
     }
 
