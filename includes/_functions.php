@@ -55,7 +55,7 @@
 
       // Set directory
       $directory = get_template_directory_uri();
-      $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
+      // $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
 
       // Get the field that holds the site key
       $site = get_field("recaptcha_key_site", "forms_settings");
