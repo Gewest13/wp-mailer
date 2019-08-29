@@ -1,7 +1,7 @@
 <?php
 
-  // Set namespace
-  // namespace Mailer;
+  // Declare namespace to prevent errors
+  namespace GewestMailer;
 
   // =============
   // This class uses array to object conversion of ACF fields
