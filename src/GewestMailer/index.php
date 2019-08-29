@@ -1,8 +1,5 @@
 <?php
 
-  // Set namespace
-  // namespace Mailer;
-
   // =============
   // ----
   // Wordpress Mailer module
@@ -74,8 +71,8 @@
       // Set the .json fields location
       // To be imported by ACF
       $this->fields = (object) [
-        "settings" => __DIR__ . "/fields/settings.json",
-        "fields"   => __DIR__ . "/fields/fields.json"
+        "settings" => __DIR__ . "/../../fields/settings.json",
+        "fields"   => __DIR__ . "/../../fields/fields.json"
       ];
 
       // Set some random honeypot fields to be randomly parsed within the field
@@ -546,7 +543,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -596,7 +593,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $boxes,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -614,7 +611,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -641,7 +638,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -660,7 +657,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -754,3 +751,13 @@
       $this->registerFields();
     }
   }
+
+  // =============
+  require __DIR__ . "/../../includes/_functions.php";
+  require __DIR__ . "/../../includes/_actions.php";
+
+  // Declare new instance of class
+  $mailer = new Mailer;
+
+  // Run initialize function to start
+  $mailer->initialize();

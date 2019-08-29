@@ -55,7 +55,7 @@
 
       // Set directory
       $directory = get_template_directory_uri();
-      $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
+      // $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
 
       // Optional: compiled babeljs file
       // $file      = "{$directory}/server/wp-mailer/js/app.js";
@@ -65,7 +65,7 @@
 
       // Return the script field with the file
       echo "<script src='https://www.google.com/recaptcha/api.js?render={$site}'></script>\n";
-      echo "<script src='{$file}' type='module'></script>\n";
+      // echo "<script src='{$file}' type='module'></script>\n";
 
     });
   }

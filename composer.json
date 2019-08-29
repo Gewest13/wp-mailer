@@ -1,20 +1,22 @@
 {
-	"name": "gewest13/wp-mailer",
-	"description": "A Wordpress module that adds a formbuilder.",
-	"type": "library",
-	"authors": [{
-		"name": "Jim de Ronde",
-		"email": "jrtderonde@gmail.com"
-	}],
-	"autoload": {
-		"psr-4": {
-			"Mailer\\": ""
-		}
-	},
-	"require": {
-		"phpmailer/phpmailer": "~6.0"
-	},
-	"config": {
-		"vendor-dir": "vendor"
-	}
+    "name": "jimderonde/wp-mailer",
+    "description": "Composer package for Gewest13's Wordpress mailer.",
+    "type": "wordpress-plugin",
+    "require": {
+        "phpmailer/phpmailer": "6.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "classmap": ["src/GewestMailer/index.php"]
+    },
+    "authors": [
+        {
+            "name": "Jim de Ronde",
+            "email": "jim@gewest13.nl"
+        },
+        {
+            "name": "Ruud Luijten",
+            "email": "ruud@gewest13.nl"
+        }
+    ]
 }
