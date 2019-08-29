@@ -212,7 +212,7 @@
     }
 
     // Validate switch
-    private function switchValidation ($r, $field) {
+    private function switchValidation ($r, $field, $errors) {
 
       // Set errors to false by default
       $errors = false;
@@ -234,7 +234,8 @@
           if (strlen($field) >= $min && strlen($field) >= $max) {
             // Do nothing
           } else {
-            return "Please check the amount of characters you have entered.";
+            if (empty($errors->characterAmount) === false) $e = $errors->characterAmount; else $e = "Please check the amount of characters you have entered.";
+            return $e;
           }
 
           break;
@@ -244,7 +245,8 @@
 
           // Check if it's a number
           if (is_numeric($field) === false) {
-            return "The value is not a number.";
+            if (empty($errors->invalidNumber) === false) $e = $errors->invalidNumber; else $e = "The value is not a number.";
+            return $e;
           } else {
             // Index is given
             // Now check for min or max
@@ -258,7 +260,8 @@
             if ($field >= $min && $field <= $max) {
               // Do nothing
             } else {
-              return "Please check the amount of characters you have entered.";
+              if (empty($errors->characterAmount) === false) $e = $errors->characterAmount; else $e = "Please check the amount of characters you have entered.";
+              return $e;
             }
           }
 
@@ -269,7 +272,8 @@
 
           // Check if URL
           if ($this->isUrl($field) === false) {
-            return "The value is not a valid url.";
+            if (empty($errors->invalidUrl) === false) $e = $errors->invalidUrl; else $e = "The value is not a valid url.";
+            return $e;
           }
 
           break;
@@ -295,7 +299,8 @@
                 // Do nothing
               } else {
                 // Return error
-                return "There error validating the uploaded file.";
+                if (empty($errors->uploadError) === false) $e = $errors->uploadError; else $e = "There error validating the uploaded file.";
+                return ;
               }
             }
 
@@ -307,7 +312,8 @@
                 // Do nothing
               } else {
                 // Return error
-                return "You've tried to upload an (nearly) empty file.";
+                if (empty($errors->emptyFile) === false) $e = $errors->emptyFile; else $e = "You've tried to upload an (nearly) empty file.";
+                return $e;
               }
             }
 
@@ -317,7 +323,8 @@
               $extension = "." . pathinfo($f, PATHINFO_EXTENSION);
               // Check if in array, else throw an error
               if (in_array($extension, $types) === false) {
-                return "File extension that you are trying to upload is not allowed.";
+                if (empty($errors->invalidFileExtension) === false) $e = $errors->invalidFileExtension; else $e = "File extension that you are trying to upload is not allowed.";
+                return $e;
               }
             }
 
@@ -334,7 +341,8 @@
 
           // Check if the given variable is a valid e-mail address
           if (filter_var($field, FILTER_VALIDATE_EMAIL) === false) {
-            return "The e-mailaddress given was not valid.";
+            if (empty($errors->invalidEmail) === false) $e = $errors->invalidEmail; else $e = "The e-mailaddress given was not valid.";
+            return $e;
           }
 
           break;
@@ -344,7 +352,8 @@
 
           // Check if field is a valid phone number
           if ($this->isPhone($field) === false) {
-            return "The phonenumber you have entered is not valid.";
+            if (empty($errors->invalidPhone) === false) $e = $errors->invalidPhone; else $e = "The phonenumber you have entered is not valid.";
+            return $e;
           }
 
           break;
@@ -356,7 +365,8 @@
           // If not empty
           // If it's an array
           if (is_array($field) === false && empty($field) === true) {
-            return "The checkbox field did not validate.";
+            if (empty($errors->checkboxError) === false) $e = $errors->checkboxError; else $e = "The checkbox field did not validate.";
+            return $e;
           }
 
           break;
@@ -368,7 +378,7 @@
     }
 
     // Validate fields function
-    public function validateFields (array $request, array $required) {
+    public function validateFields (array $request, array $required, $fieldErrors) {
 
       // Default to false
       $errors = false;
@@ -388,19 +398,21 @@
             // Check if not empty
             if (empty($field) === true) {
 
+              if (empty($fieldErrors->requiredField) === false) $e = $fieldErrors->requiredField; else $e = "This field is required.";
+
               // Return error
               $errors[] = [
                 'field' => $r->name,
-                'error' => "This field is required."
+                'error' => $e
               ];
 
             } else {
-              if ($this->switchValidation($r, $field) !== false) {
+              if ($this->switchValidation($r, $field, $fieldErrors) !== false) {
 
                 // Return error
                 $errors[] = [
                   'field' => $r->name,
-                  'error' => $this->switchValidation($r, $field)
+                  'error' => $this->switchValidation($r, $field, $fieldErrors)
                 ];
 
               }
@@ -411,12 +423,12 @@
             // Check if not empty
             if (isset($field) === true) {
               // Not required, but validate
-              if ($this->switchValidation($r, $field) !== false) {
+              if ($this->switchValidation($r, $field, $fieldErrors) !== false) {
 
                 // Return error
                 $errors[] = [
                   'field' => $r->name,
-                  'error' => $this->switchValidation($r, $field)
+                  'error' => $this->switchValidation($r, $field, $fieldErrors)
                 ];
 
               }
