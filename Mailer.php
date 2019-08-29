@@ -546,7 +546,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => (empty($field->label) === false) ? $field->label . " *" : $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -596,7 +596,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => (empty($field->label) === false) ? $field->label . " *" : $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $boxes,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -614,7 +614,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => (empty($field->label) === false) ? $field->label . " *" : $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -641,7 +641,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => (empty($field->label) === false) ? $field->label . " *" : $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];
@@ -660,7 +660,7 @@
                 $f = (object) [
                   "name"  => $field->name,
                   "type"  => $field->acf_fc_layout,
-                  "label" => (empty($field->label) === false) ? $field->label . " *" : $field->label,
+                  "label" => (empty($field->required) === false) ? $field->label . " *" : $field->label,
                   "field" => $format,
                   "multi" => ($mc === true) ? $field->columns : ''
                 ];

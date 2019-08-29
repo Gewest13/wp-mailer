@@ -65,7 +65,7 @@
 
       // Return the script field with the file
       echo "<script src='https://www.google.com/recaptcha/api.js?render={$site}'></script>\n";
-      echo "<script src='{$file}' type='module'></script>\n";
+      // echo "<script src='{$file}' type='module'></script>\n";
 
     });
   }
