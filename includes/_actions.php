@@ -68,7 +68,7 @@
                 $required = $mailer->checkFields($fields["fields"]);
 
                 // Validate the fields
-                $validate = $mailer->validateFields($request, $required);
+                $validate = $mailer->validateFields($request, $required, $fields["error"]);
 
                 // Check if validate returned true
                 if ($validate === true) {
@@ -88,9 +88,11 @@
 
                   } else {
 
+                    if (empty($fields["error"]->noRecaptcha) === false) $e = $fields["error"]->noRecaptcha; else $e = "Recaptcha wasn't added to the script.";
+
                     // Die!
                     wp_send_json_error(
-                      ["message" => "Recaptcha wasn't added to the script."]
+                      ["message" => $e]
                     );
 
                     wp_die();
@@ -164,22 +166,31 @@
 
                       // Store
                       if ($mail->send()) {
+
+                        if (empty($fields["error"]->emailSuccess) === false) $e = $fields["error"]->emailSuccess; else $e = "E-mail successfully sent!";
+
                         // Send succes => Mail was sent!
                         wp_send_json_success(
-                          ["message" => "E-mail successfully sent!"]
+                          ["message" => $e]
                         );
                       }
 
                     } catch (Exception $e) {
+
+                      if (empty($fields["error"]->emailError) === false) $e = $fields["error"]->emailError; else $e = "Error sending e-mail";
+
                       wp_send_json_error(
-                        ["message" => "Error sending e-mail"]
+                        ["message" => $e]
                       );
                     }
 
                   } else {
+
+                    if (empty($fields["error"]->recaptchaValidationError) === false) $e = $fields["error"]->recaptchaValidationError; else $e = "ReCAPTCHA didn't pass validation.";
+
                     // Recaptcha didn't validate
                       wp_send_json_error(
-                        ["message" => "ReCAPTCHA didn't pass validation."]
+                        ["message" => $e]
                       );
                   }
 
@@ -189,8 +200,11 @@
                 }
 
               } else {
+
+                if (empty($fields["error"]->missingSettings) === false) $e = $fields["error"]->missingSettings; else $e = "Please configure the SMTP and ReCAPTCHA settings correctly.";
+
                 wp_send_json_error(
-                  ["message" => "Please configure the SMTP and ReCAPTCHA settings correctly."]
+                  ["message" => $e]
                 );
               }
             }
@@ -200,8 +214,11 @@
             // );
           }
         } else {
+
+          if (empty($fields["error"]->honeypotFailed) === false) $e = $fields["error"]->honeypotFailed; else $e = "Honeypot validation failed.";
+
           wp_send_json_error(
-            ["message" => "Honeypot validation failed."]
+            ["message" => $e]
           );
         }
       }
