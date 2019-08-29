@@ -7,7 +7,7 @@
     },
     "license": "MIT",
     "autoload": {
-        "classmap": ["src/GewestMailer/index.php"]
+        "files": ["src/GewestMailer/index.php"]
     },
     "authors": [
         {
