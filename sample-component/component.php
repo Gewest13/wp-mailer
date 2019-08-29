@@ -46,7 +46,7 @@
 
             // If select
             case "select" :
-              echo $mailer->parseField($field, "js-select select__hidden");
+              echo $mailer->parseField($field, "js-select");
               break;
 
             // Else
