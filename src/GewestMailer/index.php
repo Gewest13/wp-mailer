@@ -307,7 +307,7 @@
                 // Do nothing
               } else {
                 // Return error
-                return "You've tried to upload an (nearly) empty file";
+                return "You've tried to upload an (nearly) empty file.";
               }
             }
 

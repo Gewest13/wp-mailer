@@ -90,7 +90,7 @@
 
                     // Die!
                     wp_send_json_error(
-                      ["message" => "Recaptcha wasn't added to the script"]
+                      ["message" => "Recaptcha wasn't added to the script."]
                     );
 
                     wp_die();
@@ -102,9 +102,6 @@
 
                     // We have validated all fields
                     // Now we can set up the variables and hooks in order to send the mail
-                    // Require PHPMailer
-                    // require(__DIR__ . "/../../../vendor/autoload.php");
-
                     // Declare class
                     $mail = new PHPMailer(true);
 
@@ -193,14 +190,14 @@
 
               } else {
                 wp_send_json_error(
-                  ["message" => "Please configure the SMTP and ReCAPTCHA settings correctly"]
+                  ["message" => "Please configure the SMTP and ReCAPTCHA settings correctly."]
                 );
               }
             }
           } else {
-            wp_send_json_error(
-              ["message" => "Unable to sanitize input."]
-            );
+            // wp_send_json_error(
+            //   ["message" => "Unable to sanitize input."]
+            // );
           }
         } else {
           wp_send_json_error(
