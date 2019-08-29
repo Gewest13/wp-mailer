@@ -103,7 +103,7 @@
                     // We have validated all fields
                     // Now we can set up the variables and hooks in order to send the mail
                     // Require PHPMailer
-                    require(__DIR__ . "/../../../vendor/autoload.php");
+                    // require(__DIR__ . "/../../../vendor/autoload.php");
 
                     // Declare class
                     $mail = new PHPMailer(true);
