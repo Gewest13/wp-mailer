@@ -148,21 +148,13 @@
     // Validate url function
     private function isUrl (string $url) {
 
-      // Regular expression
-      $regex = "((https?|ftp)\:\/\/)?"; // Scheme
-      $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
-      $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP
-      $regex .= "(\:[0-9]{2,5})?"; // Port
-      $regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
-      $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
-      $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor
-
       // Check and return
-      if (preg_match("/^$regex$/", $url) === true) {
+      if (filter_var($url, FILTER_VALIDATE_URL)) {
         return true;
       } else {
         return false;
       }
+
     }
 
     // Validate phone
@@ -234,7 +226,7 @@
           if (strlen($field) >= $min && strlen($field) >= $max) {
             // Do nothing
           } else {
-            if (empty($errors->characterAmount) === false) $e = $errors->characterAmount; else $e = "Please check the amount of characters you have entered.";
+            if (empty($fieldErrors->characterAmount) === false) $e = $fieldErrors->characterAmount; else $e = "Please check the amount of characters you have entered.";
             return $e;
           }
 
@@ -245,7 +237,7 @@
 
           // Check if it's a number
           if (is_numeric($field) === false) {
-            if (empty($errors->invalidNumber) === false) $e = $errors->invalidNumber; else $e = "The value is not a number.";
+            if (empty($fieldErrors->invalidNumber) === false) $e = $fieldErrors->invalidNumber; else $e = "The value is not a number.";
             return $e;
           } else {
             // Index is given
@@ -260,7 +252,7 @@
             if ($field >= $min && $field <= $max) {
               // Do nothing
             } else {
-              if (empty($errors->characterAmount) === false) $e = $errors->characterAmount; else $e = "Please check the amount of characters you have entered.";
+              if (empty($fieldErrors->characterAmount) === false) $e = $fieldErrors->characterAmount; else $e = "Please check the amount of characters you have entered.";
               return $e;
             }
           }
@@ -272,7 +264,7 @@
 
           // Check if URL
           if ($this->isUrl($field) === false) {
-            if (empty($errors->invalidUrl) === false) $e = $errors->invalidUrl; else $e = "The value is not a valid url.";
+            if (empty($fieldErrors->invalidUrl) === false) $e = $fieldErrors->invalidUrl; else $e = "The value is not a valid url.";
             return $e;
           }
 
@@ -299,7 +291,7 @@
                 // Do nothing
               } else {
                 // Return error
-                if (empty($errors->uploadError) === false) $e = $errors->uploadError; else $e = "There error validating the uploaded file.";
+                if (empty($fieldErrors->uploadError) === false) $e = $fieldErrors->uploadError; else $e = "There error validating the uploaded file.";
                 return ;
               }
             }
@@ -312,7 +304,7 @@
                 // Do nothing
               } else {
                 // Return error
-                if (empty($errors->emptyFile) === false) $e = $errors->emptyFile; else $e = "You've tried to upload an (nearly) empty file.";
+                if (empty($fieldErrors->emptyFile) === false) $e = $fieldErrors->emptyFile; else $e = "You've tried to upload an (nearly) empty file.";
                 return $e;
               }
             }
@@ -323,7 +315,7 @@
               $extension = "." . pathinfo($f, PATHINFO_EXTENSION);
               // Check if in array, else throw an error
               if (in_array($extension, $types) === false) {
-                if (empty($errors->invalidFileExtension) === false) $e = $errors->invalidFileExtension; else $e = "File extension that you are trying to upload is not allowed.";
+                if (empty($fieldErrors->invalidFileExtension) === false) $e = $fieldErrors->invalidFileExtension; else $e = "File extension that you are trying to upload is not allowed.";
                 return $e;
               }
             }
@@ -341,7 +333,7 @@
 
           // Check if the given variable is a valid e-mail address
           if (filter_var($field, FILTER_VALIDATE_EMAIL) === false) {
-            if (empty($errors->invalidEmail) === false) $e = $errors->invalidEmail; else $e = "The e-mailaddress given was not valid.";
+            if (empty($fieldErrors->invalidEmail) === false) $e = $fieldErrors->invalidEmail; else $e = "The e-mailaddress given was not valid.";
             return $e;
           }
 
@@ -352,7 +344,7 @@
 
           // Check if field is a valid phone number
           if ($this->isPhone($field) === false) {
-            if (empty($errors->invalidPhone) === false) $e = $errors->invalidPhone; else $e = "The phonenumber you have entered is not valid.";
+            if (empty($fieldErrors->invalidPhone) === false) $e = $fieldErrors->invalidPhone; else $e = "The phonenumber you have entered is not valid.";
             return $e;
           }
 
@@ -365,7 +357,7 @@
           // If not empty
           // If it's an array
           if (is_array($field) === false && empty($field) === true) {
-            if (empty($errors->checkboxError) === false) $e = $errors->checkboxError; else $e = "The checkbox field did not validate.";
+            if (empty($fieldErrors->checkboxError) === false) $e = $fieldErrors->checkboxError; else $e = "The checkbox field did not validate.";
             return $e;
           }
 
