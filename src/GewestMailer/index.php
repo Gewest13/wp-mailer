@@ -179,11 +179,11 @@
     private function sanitizeField ($string) {
       if (empty($string) === false) {
         // Escape
-        // $return = esc_html($string);
+        $return = esc_html($string);
         // $return = esc_sql($return);
         // $return = esc_js($return);
         // Sanitize
-        $return = sanitize_text_field($return);
+        $return = sanitize_textarea_field($return);
         // $return = sanitize_title_for_query($return);
 
         return $return;
