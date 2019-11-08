@@ -292,7 +292,7 @@
               } else {
                 // Return error
                 if (empty($fieldErrors->uploadError) === false) $e = $fieldErrors->uploadError; else $e = "There error validating the uploaded file.";
-                return ;
+                return $e;
               }
             }
 
