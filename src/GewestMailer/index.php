@@ -58,7 +58,7 @@
         "page_title"      => "Settings",
         "menu_title"      => "Settings",
         "menu_slug"       => "forms_settings",
-        "capability"      => "edit_posts",
+        "capability"      => "export",
         "position"        => false,
         "parent_slug"     => "edit.php?post_type=forms",
         "redirect"        => true,
