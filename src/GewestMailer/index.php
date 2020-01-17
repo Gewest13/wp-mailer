@@ -49,8 +49,19 @@
         "exclude_from_search" => true,
         "publicly_queryable"  => false,
         "rewrite"             => false,
-        "capability_type"     => "activate_plugins",
-        "show_in_rest"        => false,
+        'map_meta_cap'		    => false,
+        'capability_type'       => 'form',
+        'capabilities'			=> [
+          'publish_posts' => 'publish_form',
+          'edit_posts' => 'edit_form',
+          'edit_others_posts' => 'edit_others_form',
+          'delete_posts' => 'delete_form',
+          'delete_others_posts' => 'delete_others_form',
+          'read_private_posts' => 'read_private_form',
+          'edit_post' => 'edit_form',
+          'delete_post' => 'delete_form',
+          'read_post' => 'read_form',
+        ]
       ];
 
       // Options page options
@@ -62,7 +73,7 @@
         "position"        => false,
         "parent_slug"     => "edit.php?post_type=forms",
         "redirect"        => true,
-        "post_id"         => "forms_settings",
+        "post_id"         => "publish_form",
         "autoload"        => false,
         "update_button"		=> __("Save", "acf"),
         "updated_message"	=> __("Settings saved", "acf"),
