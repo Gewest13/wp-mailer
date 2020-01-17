@@ -49,7 +49,7 @@
         "exclude_from_search" => true,
         "publicly_queryable"  => false,
         "rewrite"             => false,
-        "capability_type"     => "delete_site",
+        "capability_type"     => "activate_plugins",
         "show_in_rest"        => false,
       ];
 
@@ -58,7 +58,7 @@
         "page_title"      => "Settings",
         "menu_title"      => "Settings",
         "menu_slug"       => "forms_settings",
-        "capability"      => "delete_site",
+        "capability"      => "activate_plugins",
         "position"        => false,
         "parent_slug"     => "edit.php?post_type=forms",
         "redirect"        => true,
