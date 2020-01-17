@@ -49,7 +49,7 @@
         "exclude_from_search" => true,
         "publicly_queryable"  => false,
         "rewrite"             => false,
-        "capability_type"     => "page",
+        "capability_type"     => "export",
         "show_in_rest"        => false,
       ];
 
