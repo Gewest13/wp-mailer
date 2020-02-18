@@ -50,17 +50,17 @@
         "publicly_queryable"  => false,
         "rewrite"             => false,
         'map_meta_cap'		    => false,
-        'capability_type'       => 'form',
-        'capabilities'			=> [
-          'publish_posts' => 'publish_form',
-          'edit_posts' => 'edit_form',
-          'edit_others_posts' => 'edit_others_form',
-          'delete_posts' => 'delete_form',
-          'delete_others_posts' => 'delete_others_form',
-          'read_private_posts' => 'read_private_form',
-          'edit_post' => 'edit_form',
-          'delete_post' => 'delete_form',
-          'read_post' => 'read_form',
+        "capability_type"     => "form",
+        "capabilities" => [
+          "publish_posts"       => "publish_form",
+          "edit_posts"          => "edit_form",
+          "edit_others_posts"   => "edit_others_form",
+          "delete_posts"        => "delete_form",
+          "delete_others_posts" => "delete_others_form",
+          "read_private_posts"  => "read_private_form",
+          "edit_post"           => "edit_form",
+          "delete_post"         => "delete_form",
+          "read_post"           => "read_form",
         ]
       ];
 
@@ -741,6 +741,34 @@
       }
     }
 
+    // Add the form capabilities to the administrator userRole
+    private function addCaps () {
+
+      // Get the administrator role
+      $role = get_role('administrator');
+      
+      // Caps
+      $caps = [
+        'publish_posts'       => 'publish_form',
+        'edit_posts'          => 'edit_form',
+        'edit_others_posts'   => 'edit_others_form',
+        'delete_posts'        => 'delete_form',
+        'delete_others_posts' => 'delete_others_form',
+        'read_private_posts'  => 'read_private_form',
+        'edit_post'           => 'edit_form',
+        'delete_post'         => 'delete_form',
+        'read_post'           => 'read_form',
+      ];
+    
+      // Loop and add
+      foreach ($caps as $cap) {
+      
+        // Add the role
+        $role->add_cap($cap, true);
+    
+      }
+    }
+
     // Clean field for empty spaces
     private function cleanField (string $field) {
       $search = ["", "  ", "   ", "    "];
@@ -759,10 +787,13 @@
       $this->registerType();
 
       // Run the function to register the options page
-      $this->registerOptions();
+      // $this->registerOptions();
 
       // Run the function to register all fields
       $this->registerFields();
+
+      // Run the function to add
+      $this->addCaps();
     }
   }
 

@@ -3,7 +3,8 @@
     "description": "Composer package for Gewest13's Wordpress mailer.",
     "type": "wordpress-plugin",
     "require": {
-        "phpmailer/phpmailer": "6.0"
+        "vlucas/phpdotenv": "^4.1",
+        "phpmailer/phpmailer": "^6.1"
     },
     "license": "MIT",
     "autoload": {
