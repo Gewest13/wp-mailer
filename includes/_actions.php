@@ -120,6 +120,8 @@
                     // $mail->SMTPSecure  = $smtp->secure;
                     $mail->isHTML(true);
 
+                    wp_send_json_success($smtp);
+
                     // Check for BCc
                     if (isset($fields["sendCopy"]) === true && $fields["sendCopy"] === true) {
                       // Get mail and name
