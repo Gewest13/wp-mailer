@@ -699,8 +699,38 @@
             "field" => "<!-- Honey --><input type='hidden' class='js-last-field' name='{$random}' />"
           ];
 
+          // Grab the dotEnv variables
+          $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
+          $dotenv->load();
+      
+          // Check if the variables are stored
+          if (empty(getenv('MAIL_SMTP_HOST')) === false
+              && empty(getenv('MAIL_SMTP_PORT')) === false
+              && empty(getenv('MAIL_SMTP_USERNAME')) === false
+              && empty(getenv('MAIL_SMTP_PASSWORD')) === false
+              && empty(getenv('RECAPTCHA_SITE_KEY')) === false
+              && empty(getenv('RECAPTCHA_SECRET_KEY')) === false) {
+      
+            // Grab all the environment variables needed for this configuration
+            $env = [
+              "smtp" => (object) [
+                "host"     => getenv('MAIL_SMTP_HOST'),
+                "port"     => getenv('MAIL_SMTP_PORT'),
+                "username" => getenv('MAIL_SMTP_USERNAME'),
+                "password" => getenv('MAIL_SMTP_PASSWORD')
+              ],
+              "recaptcha" => (object) [
+                "key_site"   => getenv('RECAPTCHA_SITE_KEY'),
+                "key_secret" => getenv('RECAPTCHA_SECRET_KEY')
+              ]
+            ];
+      
+          } else {
+            $env = false;
+          }
+
           // Get settings
-          $settings = get_fields("forms_settings");
+          $settings = $env;
 
           // Set some setting values
           $data["action"]                  = admin_url("admin-ajax.php");
@@ -785,9 +815,6 @@
 
       // Run function to register the post type
       $this->registerType();
-
-      // Run the function to register the options page
-      // $this->registerOptions();
 
       // Run the function to register all fields
       $this->registerFields();

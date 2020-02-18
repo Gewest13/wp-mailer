@@ -11,12 +11,47 @@
     // Initiate mailer class
     $mailer = new Mailer();
 
+    // Grab the dotEnv variables
+    $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
+    $dotenv->load();
+
+    // Check if the variables are stored
+    if (empty(getenv('MAIL_SMTP_HOST')) === false
+        && empty(getenv('MAIL_SMTP_PORT')) === false
+        && empty(getenv('MAIL_SMTP_USERNAME')) === false
+        && empty(getenv('MAIL_SMTP_PASSWORD')) === false
+        && empty(getenv('RECAPTCHA_SITE_KEY')) === false
+        && empty(getenv('RECAPTCHA_SECRET_KEY')) === false) {
+
+      // Grab all the environment variables needed for this configuration
+      $env = [
+        "smtp" => (object) [
+          "host"     => getenv('MAIL_SMTP_HOST'),
+          "port"     => getenv('MAIL_SMTP_PORT'),
+          "username" => getenv('MAIL_SMTP_USERNAME'),
+          "password" => getenv('MAIL_SMTP_PASSWORD')
+        ],
+        "recaptcha" => (object) [
+          "key_site"   => getenv('RECAPTCHA_SITE_KEY'),
+          "key_secret" => getenv('RECAPTCHA_SECRET_KEY')
+        ]
+      ];
+
+    } else {
+
+      // Die!
+      wp_send_json_error(
+        ["message" => "Please check the environment variables. En example is giving within the .example.env file."]
+      );
+
+    }
+
     // Check if request is not empty
     if (empty($_REQUEST) === false) {
 
       // Check if the recaptcha is valid
       // Get all the general options
-      $settings = get_fields("forms_settings");
+      $settings = $env;
 
       // Check if the form_id was set
       if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
@@ -57,7 +92,7 @@
               $from      = $fields["from"][0];
               $toArray   = $fields["to"];
 
-              // Chekc if given
+              // Check if given
               (empty($settings["smtp"]) === false) ? $smtp = $settings["smtp"] : $smtp = false;
               (empty($settings["recaptcha"]) === false) ? $recaptcha = $settings["recaptcha"] : $recaptcha = false;
 
@@ -119,8 +154,6 @@
                     $mail->Port        = $smtp->port;
                     // $mail->SMTPSecure  = $smtp->secure;
                     $mail->isHTML(true);
-
-                    wp_send_json_success($smtp);
 
                     // Check for BCc
                     if (isset($fields["sendCopy"]) === true && $fields["sendCopy"] === true) {
