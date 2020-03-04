@@ -44,8 +44,10 @@
 
   // Clear wp_footer
   if (function_exists("remove_all_actions") === true) {
-    // Clear the wp_footer
-    remove_all_actions("wp_footer");
+    if (!user_is_logged_in()) {
+      // Clear the wp_footer
+      remove_all_actions("wp_footer");
+    }
   }
 
   // Add script to wp_footer
