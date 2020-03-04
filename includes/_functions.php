@@ -44,7 +44,7 @@
 
   // Clear wp_footer
   if (function_exists("remove_all_actions") === true) {
-    if (!user_is_logged_in()) {
+    if (!is_user_logged_in()) {
       // Clear the wp_footer
       remove_all_actions("wp_footer");
     }
