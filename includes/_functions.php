@@ -55,19 +55,27 @@
     // Add the action to add
     add_action("wp_footer", function () {
 
-      // Set directory
-      $directory = get_template_directory_uri();
-      // $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
+      // Load ENV
+      $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
+      $dotenv->load();
 
-      // Optional: compiled babeljs file
-      // $file      = "{$directory}/server/wp-mailer/js/app.js";
+      if (getenv('RECAPTCHA_SITE_KEY')) {
 
-      // Get the field that holds the site key
-      $site = get_field("recaptcha_key_site", "forms_settings");
+        // Set directory
+        $directory = get_template_directory_uri();
+        // $file      = "{$directory}/server/wp-mailer/js/wp-mailer.js";
+  
+        // Optional: compiled babeljs file
+        // $file      = "{$directory}/server/wp-mailer/js/app.js";
+  
+        // Get the field that holds the site key
+        $site = getenv('RECAPTCHA_SITE_KEY');
+  
+        // Return the script field with the file
+        echo "<script src='https://www.google.com/recaptcha/api.js?render={$site}'></script>\n";
+        // echo "<script src='{$file}' type='module'></script>\n";
 
-      // Return the script field with the file
-      echo "<script src='https://www.google.com/recaptcha/api.js?render={$site}'></script>\n";
-      // echo "<script src='{$file}' type='module'></script>\n";
+      }
 
     });
   }
