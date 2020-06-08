@@ -1,7 +1,7 @@
 {
     "name": "jimderonde/wp-mailer",
     "description": "Composer package for Gewest13's Wordpress mailer.",
-    "type": "wordpress-plugin",
+    "type": "library",
     "require": {
         "vlucas/phpdotenv": "^4.1",
         "phpmailer/phpmailer": "^6.1"
