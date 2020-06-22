@@ -771,6 +771,15 @@
       }
     }
 
+    // Parse svg function
+    public function parseSVG ($field, string $svg = "") {
+      // Grab field
+      $return = $field->field;
+
+      // Replace string with classes
+      $return = str_replace("{{ svg }}", $svg, $return);
+    }
+
     // Add the form capabilities to the administrator userRole
     private function addCaps () {
 
