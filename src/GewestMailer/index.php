@@ -544,7 +544,7 @@
               case "url" :
 
                 // Set variables
-                $required = (empty($field->required) === false) ? '' : null;
+                $required = (empty($field->required) === false) ? 'required' : null;
                 $min      = (empty($field->min) === false) ? "min='{$field->min}'" : null;
                 $max      = (empty($field->max) === false) ? "max='{$field->max}'" : null;
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
@@ -584,7 +584,7 @@
               case "radio" :
 
                 // Set variables
-                $required = (empty($field->required) === false) ? '' : null;
+                $required = (empty($field->required) === false) ? 'required' : null;
 
                 // Clean options
                 $boxes = [];
@@ -618,7 +618,7 @@
 
                 // Set some variables
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
-                $required = (empty($field->required) === false) ? ' ' : null;
+                $required = (empty($field->required) === false) ? 'required' : null;
                 $format   = "<textarea name='{$field->name}' class='{{ classes }}' placeholder='{$field->placeholder}' $id $required></textarea>";
 
                 // Setup field array to be placed in $data array
@@ -636,7 +636,7 @@
 
                 // Set some variables
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
-                $required = (empty($field->required) === false) ? ' ' : null;
+                $required = (empty($field->required) === false) ? 'required' : null;
                 $format   = "<select name='{$field->name}' class='{{ classes }}' $id $required><option value=''>{$field->label}</option>";
 
                 // Loop
@@ -663,7 +663,7 @@
 
                 // Set variables
                 $id       = (empty($field->id) === false) ? "id='{$field->id}'" : null;
-                $required = (empty($field->required) === false) ? ' ' : null;
+                $required = (empty($field->required) === false) ? 'required' : null;
                 $multiple = (empty($field->multiple) === false) ? ' multiple' : null;
                 $format   = "<input name='{$field->name}[]' type='{$field->acf_fc_layout}' class='{{ classes }}' accept='{$field->filetypes}' $id $required $multiple />";
 
