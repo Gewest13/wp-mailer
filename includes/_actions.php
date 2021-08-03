@@ -143,6 +143,8 @@
                     $mail = new PHPMailer(true);
 
                     // Set settings
+                    $mail->CharSet = 'UTF-8';
+                    $mail->Encoding = 'base64';
                     $mail->SMTPDebug = 0;
                     $mail->isSMTP();
                     $mail->Host        = $smtp->host;
