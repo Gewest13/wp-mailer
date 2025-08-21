@@ -11,9 +11,11 @@
     // Initiate mailer class
     $mailer = new Mailer();
 
-    // Grab the dotEnv variables
-    $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
-    $dotenv->load();
+    // Grab the dotEnv variables (only if WordPress functions are available)
+    if (function_exists("get_template_directory")) {
+      $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
+      $dotenv->load();
+    }
 
     // Check if the variables are stored
     if (empty(getenv('MAIL_SMTP_HOST')) === false
@@ -265,5 +267,8 @@
     wp_die();
   }
 
-  add_action('wp_ajax_sendMail', 'sendMail');
-  add_action('wp_ajax_nopriv_sendMail', 'sendMail');
+  // Only register AJAX actions if WordPress functions are available
+  if (function_exists('add_action')) {
+    add_action('wp_ajax_sendMail', 'sendMail');
+    add_action('wp_ajax_nopriv_sendMail', 'sendMail');
+  }

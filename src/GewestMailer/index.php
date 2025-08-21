@@ -21,19 +21,30 @@
     // Set constructor function for class
     public function __construct () {
 
-      // Post type labels
-      $this->labels = [
-        "name"           => _x( "Forms", "Post Type General Name", "text_domain" ),
-        "singular_name"  => _x( "Form", "Post Type Singular Name", "text_domain" ),
-        "menu_name"      => __( "Forms", "text_domain" ),
-        "name_admin_bar" => __( "Form", "text_domain" ),
-        "add_new_item"   => __( "Add new form", "text_domain" ),
-      ];
+      // Post type labels (only set if WordPress translation functions are available)
+      if (function_exists("__") && function_exists("_x")) {
+        $this->labels = [
+          "name"           => _x( "Forms", "Post Type General Name", "text_domain" ),
+          "singular_name"  => _x( "Form", "Post Type Singular Name", "text_domain" ),
+          "menu_name"      => __( "Forms", "text_domain" ),
+          "name_admin_bar" => __( "Form", "text_domain" ),
+          "add_new_item"   => __( "Add new form", "text_domain" ),
+        ];
+      } else {
+        // Fallback labels when WordPress is not available
+        $this->labels = [
+          "name"           => "Forms",
+          "singular_name"  => "Form",
+          "menu_name"      => "Forms",
+          "name_admin_bar" => "Form",
+          "add_new_item"   => "Add new form",
+        ];
+      }
 
       // Post type arguments
       $this->args = [
-        "label"               => __( "Form", "text_domain" ),
-        "description"         => __( "All available forms that are registered within the site", "text_domain" ),
+        "label"               => function_exists("__") ? __( "Form", "text_domain" ) : "Form",
+        "description"         => function_exists("__") ? __( "All available forms that are registered within the site", "text_domain" ) : "All available forms that are registered within the site",
         "labels"              => $this->labels,
         "supports"            => ["title"],
         "hierarchical"        => false,
@@ -75,8 +86,8 @@
         "redirect"        => true,
         "post_id"         => "publish_form",
         "autoload"        => false,
-        "update_button"		=> __("Save", "acf"),
-        "updated_message"	=> __("Settings saved", "acf"),
+        "update_button"		=> function_exists("__") ? __("Save", "acf") : "Save",
+        "updated_message"	=> function_exists("__") ? __("Settings saved", "acf") : "Settings saved",
       ];
 
       // Set the .json fields location
@@ -100,8 +111,10 @@
     private function registerType () {
       // Check if not empty
       if (empty($this->args) === false) {
-        // Register the post type to the back-end
-        register_post_type("forms", $this->args);
+        // Register the post type to the back-end (only if WordPress functions are available)
+        if (function_exists("register_post_type")) {
+          register_post_type("forms", $this->args);
+        }
       }
     }
 
@@ -117,8 +130,9 @@
     private function registerFields () {
       // Check if the object exists
       if (empty($this->fields) === false && is_object($this->fields) === true) {
-        // Init the function
-        add_action("init", function() {
+        // Init the function (only if WordPress functions are available)
+        if (function_exists("add_action")) {
+          add_action("init", function() {
           if (function_exists("acf_add_local_field_group") === true) {
             // Loop
             foreach ($this->fields as $field) {
@@ -136,6 +150,7 @@
             }
           }
         });
+        }
       }
     }
 
@@ -189,13 +204,20 @@
     // Sanitize input function
     private function sanitizeField ($string) {
       if (empty($string) === false) {
-        // Escape
-        $return = esc_html($string);
-        // $return = esc_sql($return);
-        // $return = esc_js($return);
-        // Sanitize
-        $return = sanitize_textarea_field($return);
-        // $return = sanitize_title_for_query($return);
+        // Use WordPress functions if available, otherwise use fallback
+        if (function_exists("esc_html") && function_exists("sanitize_textarea_field")) {
+          // Escape
+          $return = esc_html($string);
+          // $return = esc_sql($return);
+          // $return = esc_js($return);
+          // Sanitize
+          $return = sanitize_textarea_field($return);
+          // $return = sanitize_title_for_query($return);
+        } else {
+          // Fallback sanitization
+          $return = htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+          $return = strip_tags($return);
+        }
 
         return $return;
       }
@@ -206,9 +228,13 @@
       if (empty($id) === false) {
         // Get the id
         $id = $this->sanitizeField($id);
-        // Shoot the query
-        $form = get_post(intval($id));
-        return $form;
+        // Shoot the query (only if WordPress functions are available)
+        if (function_exists("get_post")) {
+          $form = get_post(intval($id));
+          return $form;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -518,8 +544,12 @@
           "field" => "<input type='hidden' name='action' value='sendMail' />"
         ];
 
-        // Get fields
-        $fields = get_fields($form_id);
+        // Get fields (only if WordPress functions are available)
+        if (function_exists("get_fields")) {
+          $fields = get_fields($form_id);
+        } else {
+          $fields = false;
+        }
 
         // Check if it exists
         if (empty($fields) === false) {
@@ -699,9 +729,11 @@
             "field" => "<!-- Honey --><input type='hidden' class='js-last-field' name='{$random}' />"
           ];
 
-          // Grab the dotEnv variables
-          $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
-          $dotenv->load();
+          // Grab the dotEnv variables (only if WordPress functions are available)
+          if (function_exists("get_template_directory")) {
+            $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
+            $dotenv->load();
+          }
       
           // Check if the variables are stored
           if (empty(getenv('MAIL_SMTP_HOST')) === false
@@ -733,7 +765,7 @@
           $settings = $env;
 
           // Set some setting values
-          $data["action"]                  = admin_url("admin-ajax.php");
+          $data["action"]                  = function_exists("admin_url") ? admin_url("admin-ajax.php") : "/wp-admin/admin-ajax.php";
           $data["recaptcha"]["key_site"]   = $settings["recaptcha"]->key_site;
           $data["recaptcha"]["key_secret"] = $settings["recaptcha"]->key_secret;
 
@@ -774,28 +806,30 @@
     // Add the form capabilities to the administrator userRole
     private function addCaps () {
 
-      // Get the administrator role
-      $role = get_role('administrator');
+      // Get the administrator role (only if WordPress functions are available)
+      if (function_exists("get_role")) {
+        $role = get_role('administrator');
       
-      // Caps
-      $caps = [
-        'publish_posts'       => 'publish_form',
-        'edit_posts'          => 'edit_form',
-        'edit_others_posts'   => 'edit_others_form',
-        'delete_posts'        => 'delete_form',
-        'delete_others_posts' => 'delete_others_form',
-        'read_private_posts'  => 'read_private_form',
-        'edit_post'           => 'edit_form',
-        'delete_post'         => 'delete_form',
-        'read_post'           => 'read_form',
-      ];
-    
-      // Loop and add
-      foreach ($caps as $cap) {
+        // Caps
+        $caps = [
+          'publish_posts'       => 'publish_form',
+          'edit_posts'          => 'edit_form',
+          'edit_others_posts'   => 'edit_others_form',
+          'delete_posts'        => 'delete_form',
+          'delete_others_posts' => 'delete_others_form',
+          'read_private_posts'  => 'read_private_form',
+          'edit_post'           => 'edit_form',
+          'delete_post'         => 'delete_form',
+          'read_post'           => 'read_form',
+        ];
       
-        // Add the role
-        $role->add_cap($cap, true);
-    
+        // Loop and add
+        foreach ($caps as $cap) {
+        
+          // Add the role
+          $role->add_cap($cap, true);
+      
+        }
       }
     }
 
