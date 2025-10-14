@@ -146,7 +146,10 @@
                     // Set settings
                     $mail->CharSet = 'UTF-8';
                     $mail->Encoding = 'base64';
-                    $mail->SMTPDebug = 0;
+                    
+                    // Set SMTP debug level from environment variable (0, 1, 2, or 4)
+                    $debugLevel = getenv('MAIL_SMTP_DEBUG');
+                    $mail->SMTPDebug = in_array($debugLevel, ['0', '1', '2', '4']) ? (int)$debugLevel : 0;
                     $mail->isSMTP();
                     $mail->Host        = $smtp->host;
                     
