@@ -123,10 +123,8 @@ class Mailer {
   private function registerFields() {
     // Check if the object exists
     if (empty($this->fields) === false && is_object($this->fields) === true) {
-      // Init the function (only if WordPress functions are available)
-      if (function_exists("add_action")) {
-        add_action("init", [$this, 'loadFieldGroups']);
-      }
+      // Load fields directly since we're already in the init hook
+      $this->loadFieldGroups();
     }
   }
 
