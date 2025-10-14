@@ -168,6 +168,16 @@
                     $mail->SMTPSecure  = "";
                     $mail->SMTPAutoTLS = false;
                     $mail->Port        = $smtp->port;
+                    
+                    // Force IPv4 if specified in environment variable
+                    if (getenv('MAIL_SMTP_FORCE_IPV4') === 'true') {
+                        $mail->Host = $smtp->host;
+                        $mail->SMTPOptions = [
+                            'socket' => [
+                                'bindto' => '0.0.0.0:0'  // Force IPv4 binding
+                            ]
+                        ];
+                    }
                     // $mail->SMTPSecure  = $smtp->secure;
                     $mail->isHTML(true);
 
