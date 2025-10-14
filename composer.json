@@ -1,24 +1,26 @@
 {
-    "name": "jimderonde/wp-mailer",
-    "description": "Composer package for Gewest13's Wordpress mailer.",
-    "version": "2.2.1",
-    "type": "library",
-    "require": {
-        "vlucas/phpdotenv": "^4.1",
-        "phpmailer/phpmailer": "^6.1"
-    },
-    "license": "MIT",
-    "autoload": {
-        "files": ["src/GewestMailer/index.php"]
-    },
-    "authors": [
-        {
-            "name": "Jim de Ronde",
-            "email": "jim@gewest13.nl"
-        },
-        {
-            "name": "Ruud Luijten",
-            "email": "ruud@gewest13.nl"
-        }
+  "name": "jimderonde/wp-mailer",
+  "description": "Composer package for Gewest13's Wordpress mailer.",
+  "version": "2.2.1",
+  "type": "library",
+  "require": {
+    "vlucas/phpdotenv": "^4.1",
+    "phpmailer/phpmailer": "^6.1"
+  },
+  "license": "MIT",
+  "autoload": {
+    "files": [
+      "src/GewestMailer/index.php"
     ]
+  },
+  "authors": [
+    {
+      "name": "Jim de Ronde",
+      "email": "jim@gewest13.nl"
+    },
+    {
+      "name": "Ruud Luijten",
+      "email": "ruud@gewest13.nl"
+    }
+  ]
 }
