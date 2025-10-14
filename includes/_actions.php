@@ -21,7 +21,6 @@
     if (empty(getenv('MAIL_SMTP_HOST')) === false
         && empty(getenv('MAIL_SMTP_PORT')) === false
         && empty(getenv('MAIL_SMTP_USERNAME')) === false
-        && empty(getenv('MAIL_SMTP_PASSWORD')) === false
         && empty(getenv('RECAPTCHA_SITE_KEY')) === false
         && empty(getenv('RECAPTCHA_SECRET_KEY')) === false) {
 
@@ -150,9 +149,19 @@
                     $mail->SMTPDebug = 0;
                     $mail->isSMTP();
                     $mail->Host        = $smtp->host;
-                    $mail->SMTPAuth    = true;
+                    
+                    // Check if password is provided and not "null" or empty
+                    $password = getenv('MAIL_SMTP_PASSWORD');
+                    $hasPassword = !empty($password) && $password !== 'null' && $password !== '';
+                    
+                    $mail->SMTPAuth    = $hasPassword;
                     $mail->Username    = $smtp->username;
-                    $mail->Password    = $smtp->password;
+                    
+                    // Only set password if authentication is enabled
+                    if ($hasPassword) {
+                        $mail->Password = $smtp->password;
+                    }
+                    
                     $mail->SMTPSecure  = "";
                     $mail->SMTPAutoTLS = false;
                     $mail->Port        = $smtp->port;
