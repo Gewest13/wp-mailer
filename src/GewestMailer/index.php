@@ -125,24 +125,27 @@ class Mailer {
     if (empty($this->fields) === false && is_object($this->fields) === true) {
       // Init the function (only if WordPress functions are available)
       if (function_exists("add_action")) {
-        add_action("init", function () {
-          if (function_exists("acf_add_local_field_group") === true) {
+        add_action("init", [$this, 'loadFieldGroups']);
+      }
+    }
+  }
+
+  // Load ACF field groups from JSON files
+  public function loadFieldGroups() {
+    if (function_exists("acf_add_local_field_group") === true) {
+      // Loop through field files
+      foreach ($this->fields as $field) {
+        if (file_exists($field) === true) {
+          // Process data
+          $importFields = $field ? json_decode(file_get_contents($field), true) : [];
+          if (empty($importFields) === false) {
             // Loop
-            foreach ($this->fields as $field) {
-              if (file_exists($field) === true) {
-                // Process data
-                $importFields = $field ? json_decode(file_get_contents($field), true) : [];
-                if (empty($importFields) === false) {
-                  // Loop
-                  foreach ($importFields as $importField) {
-                    // Add the fields
-                    acf_add_local_field_group($importField);
-                  }
-                }
-              }
+            foreach ($importFields as $importField) {
+              // Add the fields
+              acf_add_local_field_group($importField);
             }
           }
-        });
+        }
       }
     }
   }
