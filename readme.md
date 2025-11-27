@@ -15,11 +15,16 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
   When this is done a first form can be added.
 
-  5. Create a `.env` file in the root of your template folder with the credentials as presented in the example file `.example.env`. 
+  5. Create a `.env` file in the root of your template folder with the credentials as presented in the example file `.example.env`.
   6. Create a new form and add any field to your liking.
   7. Add the `/sample-component/` to your list of components/. Please note that the form will require some predefined settings like an `action`, `data-wp-mailer` and `method`.
   8. At last, please include `wp_footer()` before the ending of your `</body>` tag. Please not that the entire function will be cleared and will only return the javascript file that will take care of the asynchronous requests.
   9. If desired, add the following rule to your `.css` file in order to hide the badge: `.grecaptcha-badge {display: none}`
+
+### Environment variables
+
+- `MAIL_FROM_EMAIL` lets you override the sender email used when dispatching messages (useful when your SMTP provider requires a specific from address such as Resend). When not set, the SMTP username is used as the sender while replies continue to go to the original form email when different.
+- `RECAPTCHA_MIN_SCORE` allows you to configure the minimum acceptable reCAPTCHA v3 score (defaults to `0.5`).
 
 ## Functions
 
