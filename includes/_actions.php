@@ -126,6 +126,15 @@
                     $response = getSslPage($url);
                     $response = json_decode($response);
 
+                    if ($response === null) {
+                      $message = empty($fields["error"]->recaptchaValidationError) === false
+                        ? $fields["error"]->recaptchaValidationError
+                        : "We couldn't validate the reCAPTCHA response. Please try again.";
+
+                      wp_send_json_error(["message" => $message]);
+                      wp_die();
+                    }
+
                   } else {
 
                     if (empty($fields["error"]->noRecaptcha) === false) $e = $fields["error"]->noRecaptcha; else $e = "Recaptcha wasn't added to the script.";

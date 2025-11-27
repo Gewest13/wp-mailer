@@ -14,9 +14,20 @@ class Form {
     this.request = null;
   }
 
-  submit = (e) => {
+  submit = async (e) => {
     // prevent from posting the form
     e.preventDefault();
+
+    let recaptchaToken;
+
+    try {
+      recaptchaToken = await this.getRecaptchaToken();
+    } catch (err) {
+      console.error('Recaptcha error', err);
+      return;
+    }
+
+    this.upsertRecaptchaField(recaptchaToken);
 
     this.state.fields = new FormData(this.DOM.form);
 
@@ -64,19 +75,38 @@ class Form {
     this.request.send(this.state.fields);
   }
 
-  init() {
-    // add recaptcha to the form
-    window.grecaptcha.ready(() => {
-      window.grecaptcha.execute(this.state.siteKey, { action: 'homepage' }).then((token) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'recaptcha';
-        input.value = token;
+  getRecaptchaToken() {
+    return new Promise((resolve, reject) => {
+      if (!window.grecaptcha || !this.state.siteKey) {
+        reject(new Error('Missing recaptcha configuration'));
+        return;
+      }
 
-        this.DOM.form.insertBefore(input, this.DOM.form.lastElementChild);
+      window.grecaptcha.ready(() => {
+        window.grecaptcha
+          .execute(this.state.siteKey, { action: 'homepage' })
+          .then(resolve)
+          .catch(reject);
       });
     });
+  }
 
+  upsertRecaptchaField(token) {
+    if (!token) return;
+
+    let recaptchaInput = this.DOM.form.querySelector('input[name="recaptcha"]');
+
+    if (!recaptchaInput) {
+      recaptchaInput = document.createElement('input');
+      recaptchaInput.type = 'hidden';
+      recaptchaInput.name = 'recaptcha';
+      this.DOM.form.insertBefore(recaptchaInput, this.DOM.form.lastElementChild);
+    }
+
+    recaptchaInput.value = token;
+  }
+
+  init() {
     this.DOM.form.addEventListener('submit', this.submit);
   }
 }
