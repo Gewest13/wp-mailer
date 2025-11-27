@@ -24,6 +24,9 @@
         && empty(getenv('RECAPTCHA_SITE_KEY')) === false
         && empty(getenv('RECAPTCHA_SECRET_KEY')) === false) {
 
+      $recaptcha_min_score = getenv('RECAPTCHA_MIN_SCORE');
+      $recaptcha_min_score = is_numeric($recaptcha_min_score) ? floatval($recaptcha_min_score) : 0.5;
+
       // Grab all the environment variables needed for this configuration
       $env = [
         "smtp" => (object) [
@@ -34,7 +37,8 @@
         ],
         "recaptcha" => (object) [
           "key_site"   => getenv('RECAPTCHA_SITE_KEY'),
-          "key_secret" => getenv('RECAPTCHA_SECRET_KEY')
+          "key_secret" => getenv('RECAPTCHA_SECRET_KEY'),
+          "min_score"  => $recaptcha_min_score
         ]
       ];
 
@@ -136,7 +140,17 @@
                   }
 
                   // Check recaptcha
-                  if ($response->success === true) {
+                  if (is_object($response) === false || isset($response->success) === false) {
+                    $recaptchaScore = null;
+                    $responseSuccess = false;
+                  } else {
+                    $recaptchaScore = isset($response->score) ? floatval($response->score) : null;
+                    $responseSuccess = $response->success;
+                  }
+
+                  $minScore = $settings["recaptcha"]->min_score;
+
+                  if ($responseSuccess === true && ($recaptchaScore === null || $recaptchaScore >= $minScore)) {
 
                     // We have validated all fields
                     // Now we can set up the variables and hooks in order to send the mail
@@ -247,7 +261,11 @@
 
                   } else {
 
-                    if (empty($fields["error"]->recaptchaValidationError) === false) $e = $fields["error"]->recaptchaValidationError; else $e = "ReCAPTCHA didn't pass validation.";
+                    if ($responseSuccess === true && $recaptchaScore !== null && $recaptchaScore < $minScore) {
+                      if (empty($fields["error"]->recaptchaScoreTooLow) === false) $e = $fields["error"]->recaptchaScoreTooLow; else $e = "ReCAPTCHA score did not meet the minimum threshold.";
+                    } else {
+                      if (empty($fields["error"]->recaptchaValidationError) === false) $e = $fields["error"]->recaptchaValidationError; else $e = "ReCAPTCHA didn't pass validation.";
+                    }
 
                     // Recaptcha didn't validate
                       wp_send_json_error(
