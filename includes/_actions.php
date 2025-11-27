@@ -205,7 +205,14 @@
                     }
 
                     // Mail variables
-                    $mail->setFrom($from->email, $from->name);
+                    $configuredFromEmail = getenv('MAIL_FROM_EMAIL');
+                    $fromEmail = empty($configuredFromEmail) ? $from->email : $configuredFromEmail;
+
+                    $mail->setFrom($fromEmail, $from->name);
+
+                    if (!empty($from->email) && $fromEmail !== $from->email) {
+                      $mail->addReplyTo($from->email, $from->name);
+                    }
 
                     // Add reciepient
                     foreach ($toArray as $to) {

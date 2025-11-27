@@ -23,6 +23,7 @@ This is a Wordpress module developed by Jim de Ronde ([Gewest13](https://www.gew
 
 ### Environment variables
 
+- `MAIL_FROM_EMAIL` lets you override the sender email used when dispatching messages (useful when your SMTP provider requires a specific from address such as Resend).
 - `RECAPTCHA_MIN_SCORE` allows you to configure the minimum acceptable reCAPTCHA v3 score (defaults to `0.5`).
 
 ## Functions
