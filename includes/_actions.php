@@ -206,7 +206,8 @@
 
                     // Mail variables
                     $configuredFromEmail = getenv('MAIL_FROM_EMAIL');
-                    $fromEmail = empty($configuredFromEmail) ? $from->email : $configuredFromEmail;
+                    $smtpUsername = getenv('MAIL_SMTP_USERNAME');
+                    $fromEmail = empty($configuredFromEmail) ? $smtpUsername : $configuredFromEmail;
 
                     $mail->setFrom($fromEmail, $from->name);
 
