@@ -1,331 +1,256 @@
 <?php
 
-  // Declare namespace of PHPMailer
-  use PHPMailer\PHPMailer\PHPMailer;
-  use PHPMailer\PHPMailer\Exception;
+// Declare namespace of PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-  // This file holds all the actions that are used
-  // In order to send the e-mails
-  function sendMail () {
+// This file holds all the actions that are used
+// In order to send the e-mails
+function sendMail () {
 
-    // Initiate mailer class
-    $mailer = new Mailer();
+  // Initiate mailer class
+  $mailer = new Mailer();
 
-    // Grab the dotEnv variables (only if WordPress functions are available)
-    if (function_exists("get_template_directory")) {
-      $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
-      $dotenv->load();
-    }
+  // Grab the dotEnv variables (only if WordPress functions are available)
+  if (function_exists("get_template_directory")) {
+    $dotenv = Dotenv\Dotenv::createImmutable(get_template_directory());
+    $dotenv->load();
+  }
 
-    // Check if the variables are stored
-    if (empty(getenv('MAIL_SMTP_HOST')) === false
-        && empty(getenv('MAIL_SMTP_PORT')) === false
-        && empty(getenv('MAIL_SMTP_USERNAME')) === false
-        && empty(getenv('RECAPTCHA_SITE_KEY')) === false
-        && empty(getenv('RECAPTCHA_SECRET_KEY')) === false) {
+  // Check if the variables are stored
+  if (
+    !empty(getenv('MAIL_SMTP_HOST')) &&
+    !empty(getenv('MAIL_SMTP_PORT')) &&
+    !empty(getenv('MAIL_SMTP_USERNAME')) &&
+    !empty(getenv('RECAPTCHA_SITE_KEY')) &&
+    !empty(getenv('RECAPTCHA_SECRET_KEY'))
+  ) {
 
-      $recaptcha_min_score = getenv('RECAPTCHA_MIN_SCORE');
-      $recaptcha_min_score = is_numeric($recaptcha_min_score) ? floatval($recaptcha_min_score) : 0.5;
+    $recaptcha_min_score = getenv('RECAPTCHA_MIN_SCORE');
+    $recaptcha_min_score = is_numeric($recaptcha_min_score) ? floatval($recaptcha_min_score) : 0.5;
 
-      // Grab all the environment variables needed for this configuration
-      $env = [
-        "smtp" => (object) [
-          "host"     => getenv('MAIL_SMTP_HOST'),
-          "port"     => getenv('MAIL_SMTP_PORT'),
-          "username" => getenv('MAIL_SMTP_USERNAME'),
-          "password" => getenv('MAIL_SMTP_PASSWORD')
-        ],
-        "recaptcha" => (object) [
-          "key_site"   => getenv('RECAPTCHA_SITE_KEY'),
-          "key_secret" => getenv('RECAPTCHA_SECRET_KEY'),
-          "min_score"  => $recaptcha_min_score
-        ]
-      ];
+    // Grab all the environment variables needed for this configuration
+    $env = [
+      "smtp" => (object) [
+        "host"     => getenv('MAIL_SMTP_HOST'),
+        "port"     => getenv('MAIL_SMTP_PORT'),
+        "username" => getenv('MAIL_SMTP_USERNAME'),
+        "password" => getenv('MAIL_SMTP_PASSWORD'),
+        "secure"   => getenv('MAIL_SMTP_SECURE') // ssl or tls
+      ],
+      "recaptcha" => (object) [
+        "key_site"   => getenv('RECAPTCHA_SITE_KEY'),
+        "key_secret" => getenv('RECAPTCHA_SECRET_KEY'),
+        "min_score"  => $recaptcha_min_score
+      ]
+    ];
 
-    } else {
+  } else {
 
-      // Die!
-      wp_send_json_error(
-        ["message" => "Please check the environment variables. En example is giving within the .example.env file."]
-      );
+    wp_send_json_error([
+      "message" => "Please check the environment variables. An example is provided in .example.env."
+    ]);
+  }
 
-    }
+  // Check if request is not empty
+  if (!empty($_REQUEST)) {
 
-    // Check if request is not empty
-    if (empty($_REQUEST) === false) {
+    $settings = $env;
 
-      // Check if the recaptcha is valid
-      // Get all the general options
-      $settings = $env;
+    // Check if the form_id was set
+    if (isset($_REQUEST["form_id"]) && is_numeric($_REQUEST["form_id"])) {
 
-      // Check if the form_id was set
-      if (isset($_REQUEST["form_id"]) === true && is_numeric($_REQUEST["form_id"]) === true) {
+      // Get the form
+      $form = $mailer->getFormPost($_REQUEST["form_id"]);
 
-        // Get the form
-        $form = $mailer->getFormPost($_REQUEST["form_id"]);
+      // Honeypot
+      $honeyValue = end($_REQUEST);
+      $honeyKey   = key(array_reverse($_REQUEST));
 
-        // Get the last field of array
-        $honeyValue = end($_REQUEST);
-        $honeyKey   = key(array_reverse($_REQUEST));
+      if (!empty($form) && is_object($form) && in_array($honeyKey, $mailer->honey) && empty($honeyValue)) {
 
-        // Check if not empty
-        // If not, the form is valid
-        // Also, check for honeypot occurence
-        if (empty($form) === false && is_object($form) === true && in_array($honeyKey, $mailer->honey) === true && empty($honeyValue) === true) {
+        // Sanitize data
+        $request = $mailer->sanitizeData($_REQUEST);
 
-          // Sanitize data
-          $request = $mailer->sanitizeData($_REQUEST);
+        if (!empty($_FILES)) {
+          $request[key($_FILES)] = $_FILES[key($_FILES)];
+        }
 
-          // Check if there are files
-          if (empty($_FILES) === false) {
-            // Shift to array
-            $request[key($_FILES)] = $_FILES[key($_FILES)];
-          }
+        if ($request !== false) {
 
-          // If request not false
-          if ($request !== false) {
+          $fields = get_fields($form->ID);
 
-            // Get the fields
-            $fields = get_fields($form->ID);
+          if (!empty($fields["fields"])) {
 
-            // Check if fields are given
-            if (empty($fields["fields"]) === false) {
+            $message = $fields["message"];
+            $subject = $fields["subject"];
+            $from    = $fields["from"][0];
+            $toArray = $fields["to"];
 
-              // Set some variables
-              $message   = $fields["message"];
-              $subject   = $fields["subject"];
-              $from      = $fields["from"][0];
-              $toArray   = $fields["to"];
+            $smtp      = $settings["smtp"] ?? false;
+            $recaptcha = $settings["recaptcha"] ?? false;
 
-              // Check if given
-              (empty($settings["smtp"]) === false) ? $smtp = $settings["smtp"] : $smtp = false;
-              (empty($settings["recaptcha"]) === false) ? $recaptcha = $settings["recaptcha"] : $recaptcha = false;
+            if ($smtp && $recaptcha) {
 
-              // Check if smtp & recaptcha settings are given
-              if ($smtp !== false && $recaptcha !== false) {
+              $required = $mailer->checkFields($fields["fields"]);
+              $validate = $mailer->validateFields($request, $required, $fields["error"]);
 
-                // Set required array
-                $required = $mailer->checkFields($fields["fields"]);
+              if ($validate === true) {
 
-                // Validate the fields
-                $validate = $mailer->validateFields($request, $required, $fields["error"]);
+                // Check recaptcha token
+                if (!empty($_REQUEST["recaptcha"])) {
 
-                // Check if validate returned true
-                if ($validate === true) {
+                  $token = $_REQUEST["recaptcha"];
+                  $url   = "https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha->key_secret}&response={$token}";
 
-                  // Check if recaptcha is given
-                  if (empty($_REQUEST["recaptcha"]) === false) {
+                  $response = getSslPage($url);
+                  $response = json_decode($response);
 
-                    // Validate the recaptcha
-                    $validate = $_REQUEST["recaptcha"];
-
-                    // Format the url for the request
-                    $url = "https://www.google.com/recaptcha/api/siteverify?secret={$settings["recaptcha"]->key_secret}&response={$validate}";
-
-                    // Catch response for the recaptcha
-                    $response = getSslPage($url);
-                    $response = json_decode($response);
-
-                    if ($response === null) {
-                      $message = empty($fields["error"]->recaptchaValidationError) === false
-                        ? $fields["error"]->recaptchaValidationError
-                        : "We couldn't validate the reCAPTCHA response. Please try again.";
-
-                      wp_send_json_error(["message" => $message]);
-                      wp_die();
-                    }
-
-                  } else {
-
-                    if (empty($fields["error"]->noRecaptcha) === false) $e = $fields["error"]->noRecaptcha; else $e = "Recaptcha wasn't added to the script.";
-
-                    // Die!
-                    wp_send_json_error(
-                      ["message" => $e]
-                    );
-
-                    wp_die();
-
-                  }
-
-                  // Check recaptcha
-                  if (is_object($response) === false || isset($response->success) === false) {
-                    $recaptchaScore = null;
-                    $responseSuccess = false;
-                  } else {
-                    $recaptchaScore = isset($response->score) ? floatval($response->score) : null;
-                    $responseSuccess = $response->success;
-                  }
-
-                  $minScore = $settings["recaptcha"]->min_score;
-
-                  if ($responseSuccess === true && ($recaptchaScore === null || $recaptchaScore >= $minScore)) {
-
-                    // We have validated all fields
-                    // Now we can set up the variables and hooks in order to send the mail
-                    // Declare class
-                    $mail = new PHPMailer(true);
-
-                    // Set settings
-                    $mail->CharSet = 'UTF-8';
-                    $mail->Encoding = 'base64';
-                    
-                    // Set SMTP debug level from environment variable (0, 1, 2, or 4)
-                    $debugLevel = getenv('MAIL_SMTP_DEBUG');
-                    $mail->SMTPDebug = in_array($debugLevel, ['0', '1', '2', '4']) ? (int)$debugLevel : 0;
-                    $mail->isSMTP();
-                    $mail->Host        = $smtp->host;
-                    
-                    // Check if password is provided and not "null" or empty
-                    $password = getenv('MAIL_SMTP_PASSWORD');
-                    $hasPassword = !empty($password) && $password !== 'null' && $password !== '';
-                    
-                    $mail->SMTPAuth    = $hasPassword;
-                    $mail->Username    = $smtp->username;
-                    
-                    // Only set password if authentication is enabled
-                    if ($hasPassword) {
-                        $mail->Password = $smtp->password;
-                    }
-                    
-                    $mail->SMTPSecure  = "";
-                    $mail->SMTPAutoTLS = false;
-                    $mail->Port        = $smtp->port;
-                    
-                    // Force IPv4 if specified in environment variable
-                    if (getenv('MAIL_SMTP_FORCE_IPV4') === 'true') {
-                        $mail->Host = $smtp->host;
-                        $mail->SMTPOptions = [
-                            'socket' => [
-                                'bindto' => '0.0.0.0:0'  // Force IPv4 binding
-                            ]
-                        ];
-                    }
-                    // $mail->SMTPSecure  = $smtp->secure;
-                    $mail->isHTML(true);
-
-                    // Check for BCc
-                    if (isset($fields["sendCopy"]) === true && $fields["sendCopy"] === true) {
-                      // Get mail and name
-                      $rName  = $request[$fields["nameField"]];
-                      $rEmail = $request[$fields["emailField"]];
-                      // Add bcc
-                      $mail->addBCC($rEmail, $rName);
-                    }
-
-                    // Mail variables
-                    $configuredFromEmail = getenv('MAIL_FROM_EMAIL');
-                    $smtpUsername = getenv('MAIL_SMTP_USERNAME');
-                    $fromEmail = empty($configuredFromEmail) ? $smtpUsername : $configuredFromEmail;
-
-                    $mail->setFrom($fromEmail, $from->name);
-
-                    if (!empty($from->email) && $fromEmail !== $from->email) {
-                      $mail->addReplyTo($from->email, $from->name);
-                    }
-
-                    // Add reciepient
-                    foreach ($toArray as $to) {
-                      $mail->addAddress($to->email);
-                    }
-
-                    // Set subject and message
-                    $mail->Subject = $mailer->replaceVariable($subject, $request);
-                    $mail->Body    = $mailer->replaceVariable($message, $request) . "\n";
-
-                    // Add files
-                    if (empty($_FILES) === false) {
-
-                      // Set files
-                      $files = $_FILES[array_key_first($_FILES)];
-
-                      // Loop through temp names
-                      foreach ($files["tmp_name"] as $key => $file) {
-
-                        // Store real name and temp name
-                        $name = $files["name"][$key];
-
-                        // Move file to temp folder
-                        if (move_uploaded_file($file, sys_get_temp_dir() . basename($name)) === true) {
-                          // Add to mailer
-                          $mail->addAttachment(sys_get_temp_dir() . basename($name));
-                        }
-                      }
-                    }
-
-                    // Try sending
-                    try {
-
-                      // Store
-                      if ($mail->send()) {
-
-                        if (empty($fields["error"]->emailSuccess) === false) $e = $fields["error"]->emailSuccess; else $e = "E-mail successfully sent!";
-
-                        // Send succes => Mail was sent!
-                        wp_send_json_success(
-                          ["message" => $e]
-                        );
-                      }
-
-                    } catch (Exception $e) {
-
-                      if (empty($fields["error"]->emailError) === false) $e = $fields["error"]->emailError; else $e = "Error sending e-mail";
-
-                      wp_send_json_error(
-                        ["message" => $e]
-                      );
-                    }
-
-                  } else {
-
-                    if ($responseSuccess === true && $recaptchaScore !== null && $recaptchaScore < $minScore) {
-                      if (empty($fields["error"]->recaptchaScoreTooLow) === false) $e = $fields["error"]->recaptchaScoreTooLow; else $e = "ReCAPTCHA score did not meet the minimum threshold.";
-                    } else {
-                      if (empty($fields["error"]->recaptchaValidationError) === false) $e = $fields["error"]->recaptchaValidationError; else $e = "ReCAPTCHA didn't pass validation.";
-                    }
-
-                    // Recaptcha didn't validate
-                      wp_send_json_error(
-                        ["message" => $e]
-                      );
+                  if ($response === null) {
+                    $e = $fields["error"]->recaptchaValidationError ?? "Could not validate reCAPTCHA.";
+                    wp_send_json_error(["message" => $e]);
                   }
 
                 } else {
-                  // Throw error
-                  wp_send_json_error($validate);
+                  $e = $fields["error"]->noRecaptcha ?? "Recaptcha wasn't added to the script.";
+                  wp_send_json_error(["message" => $e]);
+                }
+
+                $responseSuccess = $response->success ?? false;
+                $recaptchaScore  = isset($response->score) ? floatval($response->score) : null;
+                $minScore = $recaptcha->min_score;
+
+                if ($responseSuccess && ($recaptchaScore === null || $recaptchaScore >= $minScore)) {
+
+                  // ============
+                  // SMTP SETUP (THE FIXED PART)
+                  // ============
+
+                  $mail = new PHPMailer(true);
+
+                  $mail->CharSet   = 'UTF-8';
+                  $mail->Encoding  = 'base64';
+                  $mail->isSMTP();
+
+                  // Debug
+                  $debugLevel = getenv('MAIL_SMTP_DEBUG');
+                  $mail->SMTPDebug = in_array($debugLevel, ['0','1','2','4']) ? intval($debugLevel) : 0;
+
+                  // Load env SMTP values
+                  $smtpHost   = $smtp->host;
+                  $smtpPort   = intval($smtp->port);
+                  $smtpUser   = $smtp->username;
+                  $smtpPass   = $smtp->password;
+                  $smtpSecure = strtolower($smtp->secure);
+
+                  $mail->Host       = $smtpHost;
+                  $mail->Port       = $smtpPort;
+                  $mail->SMTPAuth   = true;
+                  $mail->Username   = $smtpUser;
+                  $mail->Password   = $smtpPass;
+
+                  // Convert env secure → PHPMailer secure
+                  if ($smtpSecure === 'ssl') {
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL (465)
+                  } elseif ($smtpSecure === 'tls') {
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // TLS (587)
+                  } else {
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // fallback
+                  }
+
+                  $mail->SMTPAutoTLS = false;  
+                  $mail->isHTML(true);
+
+                  // Optional IPv4 forcing
+                  if (getenv('MAIL_SMTP_FORCE_IPV4') === 'true') {
+                    $mail->SMTPOptions = [
+                      'socket' => [
+                        'bindto' => '0.0.0.0:0'
+                      ]
+                    ];
+                  }
+
+                  // BCC (send copy)
+                  if (!empty($fields["sendCopy"])) {
+                    $rName  = $request[$fields["nameField"]];
+                    $rEmail = $request[$fields["emailField"]];
+                    $mail->addBCC($rEmail, $rName);
+                  }
+
+                  // From
+                  $fromEmail = getenv('MAIL_FROM_EMAIL') ?: $smtpUser;
+                  $mail->setFrom($fromEmail, $from->name);
+
+                  if (!empty($from->email) && $fromEmail !== $from->email) {
+                    $mail->addReplyTo($from->email, $from->name);
+                  }
+
+                  // Recipients
+                  foreach ($toArray as $to) {
+                    $mail->addAddress($to->email);
+                  }
+
+                  // Subject & Body
+                  $mail->Subject = $mailer->replaceVariable($subject, $request);
+                  $mail->Body    = $mailer->replaceVariable($message, $request) . "\n";
+
+                  // Attach files
+                  if (!empty($_FILES)) {
+                    $files = $_FILES[array_key_first($_FILES)];
+                    foreach ($files["tmp_name"] as $key => $tmp) {
+                      $name = $files["name"][$key];
+                      $tempPath = sys_get_temp_dir() . '/' . basename($name);
+                      if (move_uploaded_file($tmp, $tempPath)) {
+                        $mail->addAttachment($tempPath);
+                      }
+                    }
+                  }
+
+                  // Send mail
+                  try {
+                    if ($mail->send()) {
+                      $e = $fields["error"]->emailSuccess ?? "E-mail successfully sent!";
+                      wp_send_json_success(["message" => $e]);
+                    }
+                  }
+                  catch (Exception $e) {
+                    $e = $fields["error"]->emailError ?? "Error sending e-mail";
+                    wp_send_json_error(["message" => $e]);
+                  }
+
+                } else {
+
+                  if ($responseSuccess && $recaptchaScore !== null && $recaptchaScore < $minScore) {
+                    $e = $fields["error"]->recaptchaScoreTooLow ?? "ReCAPTCHA score too low.";
+                  } else {
+                    $e = $fields["error"]->recaptchaValidationError ?? "ReCAPTCHA didn't pass validation.";
+                  }
+
+                  wp_send_json_error(["message" => $e]);
                 }
 
               } else {
-
-                if (empty($fields["error"]->missingSettings) === false) $e = $fields["error"]->missingSettings; else $e = "Please configure the SMTP and ReCAPTCHA settings correctly.";
-
-                wp_send_json_error(
-                  ["message" => $e]
-                );
+                wp_send_json_error($validate);
               }
+            } else {
+              $e = $fields["error"]->missingSettings ?? "SMTP and ReCAPTCHA must be configured.";
+              wp_send_json_error(["message" => $e]);
             }
-          } else {
-            // wp_send_json_error(
-            //   ["message" => "Unable to sanitize input."]
-            // );
           }
-        } else {
-
-          if (empty($fields["error"]->honeypotFailed) === false) $e = $fields["error"]->honeypotFailed; else $e = "Honeypot validation failed.";
-
-          wp_send_json_error(
-            ["message" => $e]
-          );
         }
+
+      } else {
+        $e = $fields["error"]->honeypotFailed ?? "Honeypot validation failed.";
+        wp_send_json_error(["message" => $e]);
       }
     }
-
-    // Exit and/or die the script
-    wp_die();
   }
 
-  // Only register AJAX actions if WordPress functions are available
-  if (function_exists('add_action')) {
-    add_action('wp_ajax_sendMail', 'sendMail');
-    add_action('wp_ajax_nopriv_sendMail', 'sendMail');
-  }
+  wp_die();
+}
+
+// Only register AJAX actions if WordPress functions are available
+if (function_exists('add_action')) {
+  add_action('wp_ajax_sendMail', 'sendMail');
+  add_action('wp_ajax_nopriv_sendMail', 'sendMail');
+}
